@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8'/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script async src='jquery-1.11.2.min.js'></script>
+    <script async src='bootstrap.min.js'></script>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <title>Frontend</title>
+    <style>
+    </style>
+    <script>
+        $(function () {
+            var numberOfMessagesInput = $('#numberOfMessages');
+            var timeToSpendInput = $('#timeToSpend');
+
+            function checkOnChange(input) {
+                function checking(){
+                    var value = input.val();
+                    if ($.isNumeric(value) && parseInt(value) > 0) {
+                        if (input.parent().hasClass('has-error')) {
+                            input.parent().removeClass('has-error');
+                        }
+                    } else {
+                        if (!input.parent().hasClass('has-error')) {
+                            input.parent().addClass('has-error');
+                        }
+                    }
+                }
+
+                input.change(function () {
+                    checking();
+                });
+                checking();
+            }
+
+            checkOnChange(numberOfMessagesInput);
+            checkOnChange(timeToSpendInput);
+
+            $('#sendButton').click(function () {
+                var numberOfMessages = numberOfMessagesInput.val();
+                var timeToSpend = timeToSpendInput.val();
+                if ($.isNumeric(numberOfMessages) && (parseInt(numberOfMessages) > 0) && $.isNumeric(timeToSpend) && (parseInt(timeToSpend) > 0)) {
+                    $.ajax('/messages', {
+                        type: 'POST',
+                        data: {numberOfMessages: numberOfMessages, timeToSpend: timeToSpend},
+                        success: function (data) {
+                            alert(data);
+                        },
+                        failure: function (errMsg) {
+                            alert(errMsg);
+                        }
+                    });
+                } else {
+                    alert('Values are invalid');
+                }
+                return false;
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <form>
+        <h2>Send messages</h2>
+
+        <div class="form-group">
+            <label for='numberOfMessages'>Number of messages</label>
+            <input type='number' class="form-control" min='0' step='1' id='numberOfMessages' name='numberOfMessages' value='2'>
+        </div>
+        <div class="form-group">
+            <label for='timeToSpend'>Time to spend on each message</label>
+            <input type='number' class="form-control" min='0' step='1' id='timeToSpend' name='timeToSpend' value='1'>
+        </div>
+        <button type="submit" class="btn btn-primary" id='sendButton'>Send</button>
+    </form>
+</div>
+</body>
+</html>

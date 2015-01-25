@@ -1,0 +1,26 @@
+= Frontend app
+
+This app is written in Ruby using link:http://www.sinatrarb.com[the Sinatra framework].
+The frontend use link:http://jquery.com[jQuery] and link:http://getbootstrap.com[Bootstrap].
+
+The application should be compatible with Ruby MRI and JRuby.
+
+The application connects to:
+
+- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port 2200
+- link:http://redis.io[Redis] to send messages to the backend on port 6379 using the `app_queue` key
+
+== Installation
+
+- you need link:http://zeromq.org[ZeroMQ] on your system to install the libraries
+- in the application's directory run `bundle install`
+
+== Start the app
+
+- link:http://redis.io[Redis] must be up and running to start the application
+- in the application's directory run `rackup`
+- open your browser at link:http://localhost:9292/[http://localhost:9292/]
+
+== License
+
+Code (C) 2015 released under the MIT license

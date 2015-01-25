@@ -1,0 +1,21 @@
+= Backend app
+
+This app is written in Java 8, it requires link:http://maven.apache.org[Maven].
+
+The application connects to:
+
+- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port 2201
+- link:http://redis.io[Redis] to receive messages from the frontend on port 6379 using the `app_queue` key
+
+== Installation
+
+- in the application's directory run `mvn install`
+
+== Start the app
+
+- link:http://redis.io[Redis] must be up and running to start the application
+- in the application's directory run `mvn exec:java`
+
+== License
+
+Code (C) 2015 released under the MIT license
