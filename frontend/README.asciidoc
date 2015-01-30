@@ -1,5 +1,7 @@
 = Frontend app
 
+This simple frontend applications displays a web interface to send messages to a processing backend.
+
 This app is written in Ruby using link:http://www.sinatrarb.com[the Sinatra framework].
 The frontend use link:http://jquery.com[jQuery] and link:http://getbootstrap.com[Bootstrap].
 
@@ -12,14 +14,29 @@ The application connects to:
 
 == Installation
 
-- you need link:http://zeromq.org[ZeroMQ] on your system to install the libraries
+- you need ZeroMQ on your system to install the libraries
 - in the application's directory run `bundle install`
 
 == Start the app
 
-- link:http://redis.io[Redis] must be up and running to start the application
+- Redis must be up and running to start the application
 - in the application's directory run `rackup`
 - open your browser at link:http://localhost:9292/[http://localhost:9292/]
+
+=== Configuration
+
+Configuration is done through environment variables:
+
+- `APP_REDIS_PORT`: the Redis port used to send message to the backend, default is `6379`
+- `APP_REDIS_KEY`: the Redis key used to send message to the backend, default is `app_queue`
+- `MONITORING_ZMQ_PORT`: the ZeroMQ port to send monitoring messages, default is `2200`
+
+=== Structure
+
+- `lib/app_base.rb`: base for a frontend Sinatra application with redis messages
+- `lib/monitoring_base.rb`: adds monitoring-related features
+- `lib/frontend_app.rb`: the business code
+- `static/index.html`: the frontend page
 
 == License
 

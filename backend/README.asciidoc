@@ -1,11 +1,15 @@
 = Backend app
 
+This simple backend applications process messages in a thread pool.
+
+The thread pool size is 10 and the processing is waiting a specified number of seconds.
+
 This app is written in Java 8, it requires link:http://maven.apache.org[Maven].
 
 The application connects to:
 
-- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port 2201
 - link:http://redis.io[Redis] to receive messages from the frontend on port 6379 using the `app_queue` key
+- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port 2201
 
 == Installation
 
@@ -13,7 +17,7 @@ The application connects to:
 
 == Start the app
 
-- link:http://redis.io[Redis] must be up and running to start the application
+- Redis must be up and running to start the application
 - in the application's directory run `mvn exec:java`
 
 == License

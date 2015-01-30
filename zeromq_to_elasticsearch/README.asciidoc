@@ -2,20 +2,26 @@
 
 This app is written in Ruby.
 
-It fetch all the messages send to link:http://zeromq.org[ZeroMQ]and put them in link:http://www.elasticsearch.org[Elasticsearch].
-Messages are fetched from link:http://zeromq.org[ZeroMQ] and send to link:http://www.elasticsearch.org[Elasticsearch] on port 9300 in ``monitoring`` index.
+It fetch all the messages send to link:http://zeromq.org[ZeroMQ] and put them in link:http://www.elasticsearch.org[Elasticsearch].
 
 The application should be compatible with Ruby MRI and JRuby.
 
 == Installation
 
-- you need link:http://zeromq.org[ZeroMQ] on your system to install the libraries
+- you need ZeroMQ on your system to install the libraries
 - in the application's directory run `bundle install`
 
 == Start the app
 
-- link:http://www.elasticsearch.org[Elasticsearch] must be up and running to start the application
-- in the application's directory run `ruby zeromq_to_elasticsearch XXXX` where `XXXX` is the port number, `2200` for the frontend app and `2201` for the backend app.
+- Elasticsearch must be up and running to start the application
+- in the application's directory run `ruby zeromq_to_elasticsearch XXXX` where `XXXX` is the port number, `2200` is the default for the frontend app and `2201` is the default for the backend app.
+
+=== Configuration
+
+Configuration is done through environment variables:
+
+- `ELASTICSEARCH_PORT`: the Elasticsearch port, default is `9300`
+- `ELASTICSEARCH_INDEX`: the Elasticsearch index where the data are inserted, default is `monitoring`
 
 == License
 

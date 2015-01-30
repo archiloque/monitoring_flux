@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
 
 /**
@@ -30,6 +32,11 @@ public abstract class ApplicationBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
 
     /**
+     * Thread pool in charge of processing the message.
+     */
+    private final ExecutorService executorService = Executors.newFixedThreadPool(10);
+
+    /**
      * Format a date in the RFC 339 style.
      */
     private final DateFormat rfc339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
@@ -42,34 +49,39 @@ public abstract class ApplicationBase {
         LOGGER.info("Initialized");
 
         while (true) {
-            List<String> bundled_message = jedis.blpop(0, "app_queue");
-            LOGGER.info("New message");
-            String message = bundled_message.get(1);
-            LOGGER.info(message);
-            JSONObject parsedObject = (JSONObject) JSONValue.parse(message);
-            JSONObject parsedObjectHeader = (JSONObject) parsedObject.get("header");
-            String correlationId = (String) parsedObjectHeader.get("correlation_id");
-            String receivedTimestamp = (String) parsedObjectHeader.get("timestamp");
-            String beginTimestamp = rfc339.format(new Date());
+            List<String> bundledMessage = jedis.blpop(0, "app_queue");
+            LOGGER.info("Received a message");
+            processMessage(bundledMessage.get(1));
+        }
+    }
 
-            Map<String, Object> beginHeader = new HashMap<>();
-            beginHeader.put("message_type", "begin");
-            beginHeader.put("correlation_id", correlationId);
-            beginHeader.put("received_timestamp", receivedTimestamp);
-            beginHeader.put("backend_begin_timestamp", beginTimestamp);
+    /**
+     * Process a message arrived in the queue.
+     * @param message the raw message content.
+     */
+    private void processMessage(String message) {
+        LOGGER.info(message);
+        String receivedMessageTimestamp = rfc339.format(new Date());
 
-            Map<String, ?> body = (Map<String, ?>) parsedObject.get("body");
+        JSONObject parsedObject = (JSONObject) JSONValue.parse(message);
+        MessageHeader messageHeader = new MessageHeader((JSONObject) parsedObject.get("header"));
 
-            Map<String, Object> monitoringBeginMessage = new HashMap<>();
-            monitoringBeginMessage.put("header", beginHeader);
-            monitoringBeginMessage.put("params", body);
+        Map<String, Object> header = new HashMap<>();
+        header.put("correlation_id", messageHeader.correlationId);
+        header.put("backend_received_message_timestamp", messageHeader.receivedTimestamp);
 
-            sendMonitoringMessage("begin", beginTimestamp, monitoringBeginMessage);
+        Map<String, ?> body = (Map<String, ?>) parsedObject.get("body");
+
+        sendMonitoringMessage("Received_message", receivedMessageTimestamp, createMonitoringMessage(header, body, null, null));
+        executorService.submit(() -> {
+            LOGGER.info("Begin processing");
+            String beginProcessingTimestamp = rfc339.format(new Date());
+            header.put("backend_begin_processing_timestamp", beginProcessingTimestamp);
+            sendMonitoringMessage("Begin process", beginProcessingTimestamp, createMonitoringMessage(header, body, null, null));
 
             Map<?, ?> result = null;
             Exception exception = null;
 
-            LOGGER.info("Begin process");
             try {
                 result = processMessage(body);
             } catch (Exception e) {
@@ -77,24 +89,12 @@ public abstract class ApplicationBase {
                 LOGGER.error(e.getMessage());
                 e.printStackTrace();
             }
-            LOGGER.info("End process");
-
-            Map<String, Object> endHeader = new HashMap<>(beginHeader);
-            String endTimestamp = rfc339.format(new Date());
-            endHeader.put("backend_end_timestamp", endTimestamp);
-
-            Map<String, Object> monitoringEndMessage = new HashMap<>();
-            monitoringEndMessage.put("header", endHeader);
-            monitoringEndMessage.put("params", body);
-            if (result != null) {
-                monitoringEndMessage.put("result", result);
-            }
-            if (exception != null) {
-                monitoringEndMessage.put("exception", exception.getMessage());
-            }
-            sendMonitoringMessage("end", endTimestamp, monitoringEndMessage);
-
-        }
+            LOGGER.info("End processing");
+            String endProcessingTimestamp = rfc339.format(new Date());
+            header.put("backend_end_processing_timestamp", endProcessingTimestamp);
+            sendMonitoringMessage("End process", endProcessingTimestamp, createMonitoringMessage(header, body, result, exception));
+            return null;
+        });
     }
 
     /**
@@ -107,26 +107,56 @@ public abstract class ApplicationBase {
     protected abstract Map<?, ?> processMessage(Map<String, ?> message) throws Exception;
 
     /**
+     * Create a monitoring message, header is cloned.
+     * @param header the message header
+     * @param params the invocation params
+     * @param result the invocation result, nullable
+     * @param exception the invocation exception, nullable
+     * @return a message ready to be sent
+     */
+    private Map<String, Object> createMonitoringMessage(
+            Map<String, Object> header,
+            Map<String, ?> params,
+            Map<?, ?> result,
+            Exception exception
+    ){
+        Map<String, Object> message = new HashMap<String, Object>(4);
+        if(header != null){
+            message.put("header", new HashMap<>(header));
+        }
+        if(params != null){
+            message.put("params", params);
+        }
+        if(result != null){
+            message.put("result", result);
+        }
+        if(exception != null){
+            message.put("exception", exception.getMessage());
+        }
+        return message;
+    }
+
+    /**
      * Send a message to the monitoring system.
      *
      * @param messageType the message type
      * @param content     the base message content
      */
-    private void sendMonitoringMessage(String messageType, String timestamp, Map<String, ?> content) {
+    private void sendMonitoringMessage(String messageType, String timestamp, Map<String, Object> content) {
         if (timestamp == null) {
             timestamp = rfc339.format(new Date());
         }
-        Map additionalContent = new HashMap<>(content);
-        Map<String, Object> header = (Map<String, Object>) additionalContent.get("header");
+        Map<String, Object> message = new HashMap<>(content);
+        Map<String, Object> header = (Map<String, Object>) message.get("header");
         if (header == null) {
             header = new HashMap<>();
-            additionalContent.put("header", header);
+            message.put("header", header);
         }
         header.put("message_type", messageType);
         header.put("timestamp", timestamp);
         header.put("from", this.getClass().getName());
 
-        blockingQueue.add(additionalContent);
+        blockingQueue.add(message);
     }
 
 
@@ -163,6 +193,20 @@ public abstract class ApplicationBase {
                 }
             }
         }
+    }
+
+    private static final class MessageHeader {
+
+        private final String correlationId;
+
+        private final String receivedTimestamp;
+
+        private MessageHeader(JSONObject jsonObject) {
+            correlationId = (String) jsonObject.get("correlation_id");
+            receivedTimestamp = (String) jsonObject.get("timestamp");
+
+        }
+
     }
 
 }
