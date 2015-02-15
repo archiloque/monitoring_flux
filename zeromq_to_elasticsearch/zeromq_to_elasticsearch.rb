@@ -49,13 +49,17 @@ class ZeromqToElasticsearch
       result_code = pull_sock.recv_string(message)
       if error_check(result_code)
         LOGGER.debug "Read [#{message}"
-        json_message = JSON.parse(message)
-        elasticsearch_client.create(
-            {
-                index: elasticsearch_index,
-                body: json_message,
-                type: 'zeromq_to_elasticsearch'
-            })
+        begin
+          json_message = JSON.parse(message)
+          elasticsearch_client.create(
+              {
+                  :index => elasticsearch_index,
+                  :body => json_message,
+                  :type => 'zeromq_to_elasticsearch'
+              })
+        rescue JSON::ParserError => e
+          LOGGER.error "Error while parsing #{e} [#{message}]"
+        end
       end
 
     end

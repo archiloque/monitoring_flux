@@ -8,12 +8,14 @@ This app is written in Java 8, it requires link:http://maven.apache.org[Maven].
 
 The application connects to:
 
-- link:http://redis.io[Redis] to receive messages from the frontend on port 6379 using the `app_queue` key
-- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port 2201
+- link:http://redis.io[Redis] to receive messages from the frontend on port `6379` using the `app_queue` key
+- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port `2202`
+
+The configuration can be changed in the application's `pom.xml` and in it's parent `pom.xml`.
 
 == Installation
 
-- in the application's directory run `mvn install`
+- simply build all maven module by running `mvn install` on the project's root
 
 == Start the app
 

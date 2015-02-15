@@ -1,4 +1,4 @@
-package com.octo.monitoring_flux;
+package com.octo.monitoring_flux.backend;
 
 import java.util.Map;
 
@@ -13,7 +13,7 @@ public class Backend extends ApplicationBase {
 
     @Override
     protected Map<?, ?> processMessage(Map<String, ?> message) throws Exception {
-        Long timeToSleep = (Long) message.get("timeToSpend");
+        Integer timeToSleep = (Integer) message.get("timeToSpend");
         Thread.sleep(timeToSleep * 1000);
         return null;
     }

@@ -6,10 +6,14 @@ GEM
       ffi-rzmq-core (>= 1.0.1)
     ffi-rzmq-core (1.0.3)
       ffi (~> 1.9)
+    mime-types (2.4.3)
+    netrc (0.10.2)
     rack (1.6.0)
     rack-protection (1.5.3)
       rack
-    redis (3.2.0)
+    rest-client (1.7.2)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     sinatra (1.4.5)
       rack (~> 1.4)
       rack-protection (~> 1.4)
@@ -21,5 +25,5 @@ PLATFORMS
 
 DEPENDENCIES
   ffi-rzmq
-  redis
+  rest-client
   sinatra

@@ -52,7 +52,7 @@ class MonitoringBase < AppBase
         begin
           message = settings.monitoring_queue.pop
           message_json = JSON.generate(message)
-          MONITORING_LOG.debug{"Sending message [#{message_json}]"}
+          MONITORING_LOG.debug { "Sending message [#{message_json}]" }
           zmq_socket.send_string(message_json)
           error_check(result_code)
         rescue Exception => e
@@ -79,21 +79,43 @@ class MonitoringBase < AppBase
     send_monitoring_message 'End call', timestamp
   end
 
+  alias_method :query_middle_end_service_base, :query_middle_end_service
 
-  alias_method :post_message_to_backend_base, :post_message_to_backend
+  # Add monitoring capabilities
+  def query_middle_end_service(method, url, headers = {}, payload)
+    before_timestamp = current_timestamp
+    send_monitoring_message(
+        'calling_middle_end_service',
+        before_timestamp,
+        {url: url, headers: headers, payload: payload}
+    )
+    begin
+      result = query_middle_end_service_base(
+          method,
+          url,
+          headers.merge(
+              {
+                  'X-Correlation-id' => request.env[:correlation_id],
+                  'timestamp' => before_timestamp,
 
-  # Post a message to the backend
-  def post_message_to_backend(body, header = {})
-    timestamp = current_timestamp
-    send_monitoring_message('Send message to backend', timestamp, {message: body})
-    post_message_to_backend_base(
-        body,
-        header.merge(
-            {
-                correlation_id: request.env[:correlation_id],
-                timestamp: timestamp
+              }),
+          payload)
+      after_timestamp = current_timestamp
+      send_monitoring_message(
+          'calling_middle_end_service',
+          before_timestamp,
+          {url: url, headers: headers, payload: payload, result: result, before: before_timestamp, after: after_timestamp}
+      )
+    rescue => e
+      after_timestamp = current_timestamp
+      send_monitoring_message(
+          'calling_middle_end_service',
+          before_timestamp,
+          {url: url, headers: headers, payload: payload, result: {code: e.http_code, content: e.http_body}, before: before_timestamp, after: after_timestamp}
+      )
+      raise e
+    end
 
-            }))
   end
 
   private
@@ -130,10 +152,10 @@ class MonitoringBase < AppBase
                   message_type: message_type,
                   correlation_id: request.env[:correlation_id],
                   timestamp: timestamp,
-                  from: self.class.name
+                  from: self.class.name,
               },
               params: params,
-              env: env_params
+              env: env_params,
           })
     end
   end

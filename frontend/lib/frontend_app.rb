@@ -1,3 +1,4 @@
+require 'rest_client'
 require_relative 'monitoring_base'
 
 # Simple frontend app: a single page and a single method
@@ -11,15 +12,35 @@ class FrontendApp < MonitoringBase
   end
 
   post '/messages' do
-    number_of_messages = params['numberOfMessages'].to_i
-    time_to_spend = params['timeToSpend'].to_i
-    FRONTEND_APP_LOG.info{"Sending #{number_of_messages} messages to wait [#{time_to_spend}]"}
-
-    message_content = {numberOfMessages: number_of_messages, timeToSpend: time_to_spend}
-    number_of_messages.times do
-      post_message_to_backend(message_content)
+    # Call first service
+    begin
+      query_middle_end_service(
+          :get,
+          '/endpoint1',
+          {
+              content_type: 'application/json',
+          }
+      )
+    rescue => e
+      return [500, "KO: #{e} #{e.http_body}"]
     end
 
+    number_of_messages = params['numberOfMessages'].to_i
+    time_to_spend = params['timeToSpend'].to_i
+
+    begin
+      query_middle_end_service(
+          :post,
+          '/endpoint2',
+          {content_type: 'application/json'},
+          {
+              numberOfMessages: number_of_messages,
+              timeToSpend: time_to_spend,
+          }
+      )
+    rescue => e
+      return [500, "KO: #{e} #{e.http_body}"]
+    end
     'OK'
   end
 

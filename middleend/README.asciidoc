@@ -1,0 +1,25 @@
+= Middle end app
+
+This applications exposes REST web services and send messages to a processign backend.
+
+This app is written in Java 8 and relies on link:http://spring.io[Spring], it requires link:http://maven.apache.org[Maven].
+
+The application connects to:
+
+- link:http://redis.io[Redis] to send messages to the backend on port 6379 using the `app_queue` key
+- link:http://zeromq.org[ZeroMQ] to send monitoring messages on port `2201`
+
+The configuration can be changed in the application's `pom.xml` and in it's parent `pom.xml`.
+
+== Build
+
+- simply build all maven module by running `mvn install` on the project's root
+
+== Start the app
+
+- Redis must be up and running to start the application
+- in the application's directory run `mvn spring-boot:run`
+
+== License
+
+Code (C) 2015 released under the MIT license
