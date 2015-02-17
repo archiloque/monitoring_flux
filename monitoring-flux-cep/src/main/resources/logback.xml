@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration>
+<configuration >
+
+  <!-- Appender Console -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+   <withJansi>true</withJansi>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} %-5level %class{0} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Logger -->
+  <logger name="com.octo.monitoring"            level="INFO"  />
+  <logger name="org.springframework"            level="WARN"  />
+  <logger name="org.apache.camel"               level="WARN"  />
+  <logger name="org.apache.http.client"         level="ERROR" />
+ 
+  <!-- Logger -->
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+
+</configuration>

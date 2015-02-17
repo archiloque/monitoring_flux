@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:camel="http://camel.apache.org/schema/spring"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+	
+	
+	<bean id="msg.processor" class="com.octo.monitoring.processor.MonitoringMessageProcessor" />
+	
+	<!-- ~~~~~~~~~~~~~~~~~ -->
+	<!-- Camel Context     -->
+	<!-- ~~~~~~~~~~~~~~~~~ -->
+	<camelContext  xmlns="http://camel.apache.org/schema/spring" 
+	   id="octo.monitoring.camelContext" trace="${log.verbose?false}" 
+	   errorHandlerRef="errorHandler" >
+		 
+    	<propertyPlaceholder  id="properties"
+    	       ignoreMissingLocation="true"
+    	       location="monflux-conf.properties" />
+
+		<!-- Process news -->
+		<route id="msg.processor" trace="false">
+			<from uri="seda:monitoring" />
+			<to uri="msg.processor" />
+		</route>
+
+	</camelContext>
+	
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- Substitute external properties    -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+	<bean class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+  		<property name="locations" 						value="classpath:monflux-conf.properties"/>
+  		<property name="ignoreResourceNotFound" 		value="false" /> 
+  		<property name="ignoreUnresolvablePlaceholders" value="false" />
+  		<property name="valueSeparator" 				value="?" />
+	</bean>
+	
+	<!-- ~~~~~~~~~~~~~~~~~ -->
+	<!-- Error Handler     -->
+	<!-- ~~~~~~~~~~~~~~~~~ -->
+	<bean id="errorHandler" class="org.apache.camel.builder.DeadLetterChannelBuilder">
+  		<property name="deadLetterUri" value="errorProcessor"/>
+	</bean>
+	
+	<bean id="errorProcessor" class="com.octo.monitoring.processor.ErrorHandlerProcessor" />
+	
+	<!-- ~~~~~~~~~~~~~~~~~~~~~ -->
+	<!-- Graceful shutdown...  -->
+	<!-- ~~~~~~~~~~~~~~~~~~~~~ -->
+	<bean class="org.apache.camel.impl.DefaultShutdownStrategy">
+		<property name="timeout" value="${shutdown.timeout?20}"/> 
+	</bean>
+	
+	
+</beans>
