@@ -60,6 +60,7 @@
         <module>backend</module>
         <module>middleend</module>
         <module>shared</module>
+        <module>monitoring-flux-cep</module>
     </modules>
 
 </project>

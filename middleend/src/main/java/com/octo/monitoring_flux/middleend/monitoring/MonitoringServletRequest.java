@@ -1,22 +1,23 @@
 package com.octo.monitoring_flux.middleend.monitoring;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.octo.monitoring_flux.shared.MonitoringUtilities;
 
 /**
  * An HttpServletRequestWrapper that record the request content and provide some helpers.
@@ -136,38 +137,7 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
                 '}';
     }
 
-    /**
-     * A ServletInputStream that record the request as it's being read.
-     * Use #getContent to get the content.
-     */
-    private static final class RecordingServletInputStream extends ServletInputStream {
-
-        private final ByteArrayOutputStream byteArrayOutputStream;
-
-        private final ServletInputStream servletInputStream;
-
-        private RecordingServletInputStream(HttpServletRequest httpServletRequest) throws IOException {
-            this.servletInputStream = httpServletRequest.getInputStream();
-            this.byteArrayOutputStream = new ByteArrayOutputStream();
-        }
-
-        @Override
-        public int read() throws IOException {
-            int value = servletInputStream.read();
-            byteArrayOutputStream.write(value);
-            return value;
-        }
-
-        @Override
-        public void close() throws IOException {
-            servletInputStream.close();
-        }
-
-        public String getContent() {
-            return byteArrayOutputStream.toString();
-        }
-
-    }
+    
 
 
 }
