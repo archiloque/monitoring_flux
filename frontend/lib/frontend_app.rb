@@ -12,6 +12,7 @@ class FrontendApp < MonitoringBase
   end
 
   post '/messages' do
+
     # Call first service
     begin
       query_middle_end_service(
@@ -21,13 +22,13 @@ class FrontendApp < MonitoringBase
               content_type: 'application/json',
           }
       )
-    rescue => e
+    rescue RestClient::Exception => e
       return [500, "KO: #{e} #{e.http_body}"]
     end
 
+    # Call second service
     number_of_messages = params['numberOfMessages'].to_i
     time_to_spend = params['timeToSpend'].to_i
-
     begin
       query_middle_end_service(
           :post,
@@ -38,9 +39,11 @@ class FrontendApp < MonitoringBase
               timeToSpend: time_to_spend,
           }
       )
-    rescue => e
+    rescue RestClient::Exception => e
       return [500, "KO: #{e} #{e.http_body}"]
     end
+
+    # Both services are OK
     'OK'
   end
 
