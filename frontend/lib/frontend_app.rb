@@ -22,8 +22,8 @@ class FrontendApp < MonitoringBase
               content_type: 'application/json',
           }
       )
-    rescue RestClient::Exception => e
-      return [500, "KO: #{e} #{e.http_body}"]
+    rescue => e
+      return [500, "KO: #{e}"]
     end
 
     # Call second service
@@ -39,8 +39,8 @@ class FrontendApp < MonitoringBase
               timeToSpend: time_to_spend,
           }
       )
-    rescue RestClient::Exception => e
-      return [500, "KO: #{e} #{e.http_body}"]
+    rescue e
+      return [500, "KO: #{e}"]
     end
 
     # Both services are OK

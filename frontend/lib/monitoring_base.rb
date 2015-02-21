@@ -36,9 +36,8 @@ class MonitoringBase < AppBase
   public
 
   configure do
-    set :app_name, name
-    set :host_name, Socket.gethostname
-    set :process_pid, Process.pid
+    set :module_type, self.name
+    set :module_id, "#{settings.module_type}_#{Socket.gethostname}_#{Process.pid}"
 
     # Initialize 0mq
     MONITORING_LOG.info { 'Initialize ZeroMq' }
@@ -79,29 +78,60 @@ class MonitoringBase < AppBase
     timestamp = current_timestamp
     timestamp_string = timestamp_as_string(timestamp)
     request.monitoring_info[:before_timestamp] = timestamp
-    request.env[:correlation_id] = "#{settings.host_name}_#{settings.app_name}_#{settings.process_pid}_#{Time.now.getutc}_#{SecureRandom.uuid}"
-    request.env[:frontend_begin_timestamp] = timestamp_string
-    send_monitoring_message 'Begin call', timestamp_string
+    request.monitoring_info[:before_timestamp_string] = timestamp_string
+    request.monitoring_info[:correlation_id] = "#{settings.module_id}_#{Time.now.getutc}_#{SecureRandom.uuid}"
+    send_monitoring_message(
+        'Begin call',
+        timestamp_string,
+        {
+            begin_timestamp: timestamp_string,
+        }
+    )
   end
 
   # Send a message after a request is processed
   after do
     timestamp = current_timestamp
     timestamp_string = timestamp_as_string(timestamp)
-    request.env[:frontend_end_timestamp] = timestamp_string
-    request.env[:frontend_time_elapsed] = current_timestamp - request.monitoring_info[:before_timestamp]
-    send_monitoring_message 'End call', timestamp_string, {code: response.status, content: response.body}
+    send_monitoring_message(
+        'End call',
+        timestamp_string,
+        {
+            begin_timestamp: request.monitoring_info[:before_timestamp_string],
+            end_timestamp: timestamp_string,
+            elapsed_time: current_timestamp - request.monitoring_info[:before_timestamp],
+
+            result: {
+                code: response.status,
+                content: response.body
+            }
+        })
   end
 
   alias_method :query_middle_end_service_base, :query_middle_end_service
 
   # Add monitoring capabilities to query_middle_end_service
   def query_middle_end_service(method, url, headers = {}, payload)
+
     before_timestamp = current_timestamp
     before_timestamp_string = timestamp_as_string(before_timestamp)
-    common_message = {url: url, headers: headers, payload: payload}
+
+    real_headers = headers.merge(
+        {
+            'X-Correlation-id' => request.monitoring_info[:correlation_id],
+            'X-Starting-timestamp' => before_timestamp_string,
+        })
+
+    common_message =
+        {
+            begin_timestamp: before_timestamp_string,
+            service_url: url,
+            headers: real_headers,
+            payload: payload
+        }
+
     send_monitoring_message(
-        'calling_middle_end_service',
+        'Begin call middle end service',
         before_timestamp_string,
         common_message
     )
@@ -109,39 +139,28 @@ class MonitoringBase < AppBase
       result = query_middle_end_service_base(
           method,
           url,
-          headers.merge(
-              {
-                  'X-Correlation-id' => request.env[:correlation_id],
-                  'X-Starting-timestamp' => before_timestamp_string,
-
-              }),
+          real_headers,
           payload)
-      after_timestamp = current_timestamp
-      after_timestamp_string = timestamp_as_string(after_timestamp)
-      send_monitoring_message(
-          'calling_middle_end_service',
-          after_timestamp_string,
-          common_message.merge(
-              {
-                  result: {code: result.code, content: result},
-                  before: before_timestamp_string,
-                  after: after_timestamp_string,
-                  elapsed: after_timestamp - before_timestamp
-              })
+      query_middle_end_service_after(
+          common_message,
+          {code: result.code, content: result},
+          before_timestamp,
+          before_timestamp_string
       )
+    rescue RestClient::Exception => e
+      query_middle_end_service_after(
+          common_message,
+          {code: e.http_code, content: e.http_body},
+          before_timestamp,
+          before_timestamp_string
+      )
+      raise e
     rescue => e
-      after_timestamp = current_timestamp
-      after_timestamp_string = timestamp_as_string(after_timestamp)
-      send_monitoring_message(
-          'calling_middle_end_service',
-          after_timestamp_string,
-          common_message.merge(
-              {
-                  result: {code: e.http_code, content: e.http_body},
-                  before: before_timestamp_string,
-                  after: after_timestamp_string,
-                  elapsed: after_timestamp - before_timestamp
-              })
+      query_middle_end_service_after(
+          common_message,
+          {content: e.message},
+          before_timestamp,
+          before_timestamp_string
       )
       raise e
     end
@@ -149,6 +168,21 @@ class MonitoringBase < AppBase
   end
 
   private
+
+  def query_middle_end_service_after(common_message, result, before_timestamp, before_timestamp_string)
+    after_timestamp = current_timestamp
+    after_timestamp_string = timestamp_as_string(after_timestamp)
+    send_monitoring_message(
+        'End call middle end service',
+        after_timestamp_string,
+        common_message.merge(
+            {
+                end_timestamp: after_timestamp_string,
+                elapsed_time: after_timestamp - before_timestamp,
+                result: result
+            })
+    )
+  end
 
   # Execute a block and rescue any exception.
   # Enable to isolate monitoring code from business code.
@@ -167,14 +201,16 @@ class MonitoringBase < AppBase
 
   # Send a monitoring message
   # specify a message type and a custom content
-  def send_monitoring_message(message_type, timestamp = current_timestamp, content = {})
+  def send_monitoring_message(message_type,
+                              timestamp = current_timestamp,
+                              content = {})
     yield_rescued do
 
       # Will contain env parameters
       env_params = {}
       request.env.each_pair do |key, value|
         # Don't include any rack-specific parameter
-        unless key.to_s.start_with? 'rack.'
+        unless key.to_s.start_with?('rack.') || key.to_s.start_with?('sinatra.')
           env_params[key] = value
         end
       end
@@ -182,14 +218,15 @@ class MonitoringBase < AppBase
       # Add the message to the monitoring queue
       settings.monitoring_queue << content.merge(
           {
-              header: {
-                  message_type: message_type,
-                  correlation_id: request.env[:correlation_id],
-                  timestamp: timestamp,
-                  from: self.class.name,
-              },
+              correlation_id: request.monitoring_info[:correlation_id],
+              timestamp: timestamp,
+
+              module_type: settings.module_type,
+              module_id: settings.module_id,
+              endpoint: "#{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}",
+              message_type: message_type,
               params: params,
-              env: env_params,
+              env: env_params
           })
     end
   end
