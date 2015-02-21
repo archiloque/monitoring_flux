@@ -11,7 +11,7 @@
   </appender>
 
   <!-- Logger -->
-  <logger name="com.octo.monitoring"            level="DEBUG"  />
+  <logger name="com.octo.monitoring_flux"            level="INFO"  />
   <logger name="org.springframework"            level="WARN"  />
   <logger name="org.apache.camel"               level="WARN"  />
   <logger name="org.apache.http.client"         level="ERROR" />

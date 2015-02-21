@@ -1,4 +1,4 @@
-package com.octo.monitoring;
+package com.octo.monitoring_flux.cep;
 
 import org.apache.camel.CamelContext;
 import org.slf4j.Logger;
@@ -30,7 +30,7 @@ public class MainStandAlone {
 		LOGGER.info("Initializing MONITORING POST PROCESSOR");
 		springCtx = new ClassPathXmlApplicationContext("/META-INF/camel-context.xml");
 		
-		// Get camel conext
+		// Get camel context
 		CamelContext camelContext = springCtx.getBean(CamelContext.class);
 		try {
 			camelContext.start();

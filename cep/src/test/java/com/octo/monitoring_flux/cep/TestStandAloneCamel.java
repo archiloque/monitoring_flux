@@ -1,4 +1,4 @@
-package com.octo.monitoring;
+package com.octo.monitoring_flux.cep;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Produce;

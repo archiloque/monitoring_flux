@@ -9,13 +9,13 @@
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
 	
-	<bean id="msg.processor" class="com.octo.monitoring.processor.MonitoringMessageProcessor" />
+	<bean id="msg.processor" class="com.octo.monitoring_flux.cep.processor.MonitoringMessageProcessor" />
 	
 	<!-- ~~~~~~~~~~~~~~~~~ -->
 	<!-- Camel Context     -->
 	<!-- ~~~~~~~~~~~~~~~~~ -->
 	<camelContext  xmlns="http://camel.apache.org/schema/spring" 
-	   id="octo.monitoring.camelContext" trace="${log.verbose?false}" 
+	   id="octo.monitoring_flux.camelContext" trace="${log.verbose?false}"
 	   errorHandlerRef="errorHandler" >
 		 
     	<propertyPlaceholder  id="properties"
@@ -47,7 +47,7 @@
   		<property name="deadLetterUri" value="errorProcessor"/>
 	</bean>
 	
-	<bean id="errorProcessor" class="com.octo.monitoring.processor.ErrorHandlerProcessor" />
+	<bean id="errorProcessor" class="com.octo.monitoring_flux.cep.processor.ErrorHandlerProcessor" />
 	
 	<!-- ~~~~~~~~~~~~~~~~~~~~~ -->
 	<!-- Graceful shutdown...  -->
