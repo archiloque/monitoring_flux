@@ -16,6 +16,7 @@
     <version>0.1-SNAPSHOT</version>
 
     <properties>
+        <app.name>monitoring-flux-middleend</app.name>
         <zeromq.port>2201</zeromq.port>
         <server.port>8086</server.port>
     </properties>

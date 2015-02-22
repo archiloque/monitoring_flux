@@ -14,6 +14,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
+import javax.annotation.PostConstruct;
+import java.lang.management.ManagementFactory;
+
 /**
  * Base class for the application, used by spring boot.
  */
@@ -26,8 +29,21 @@ public class Application extends WebMvcConfigurerAdapter {
     @Autowired
     private Environment environment;
 
+    private String appName;
+
+    private String appId;
+
+    private int zeromqPort;
+
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
+    }
+
+    @PostConstruct
+    private void postConstruct() {
+        appName = environment.getProperty("app.name");
+        appId = appName + "." + ManagementFactory.getRuntimeMXBean().getName();
+        zeromqPort = Integer.parseInt(environment.getProperty("zeromq.port"));
     }
 
     /**
@@ -36,7 +52,8 @@ public class Application extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(
-        		new MonitoringInterceptor(Integer.parseInt(environment.getProperty("zeromq.port"))));
+                new MonitoringInterceptor(appName, appId, zeromqPort)
+        );
     }
 
     /**

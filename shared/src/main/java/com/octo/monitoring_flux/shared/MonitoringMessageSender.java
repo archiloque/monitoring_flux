@@ -19,28 +19,55 @@ public final class MonitoringMessageSender extends Thread {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringMessageSender.class);
 
-    private final int zMQport;
+    /**
+     * The unique instance.
+     */
+    private static MonitoringMessageSender INSTANCE;
+
+    /**
+     * Initialize the message sender.
+     *
+     * @param zMQport the non-null port number to be used by Zero MQ
+     */
+    public static void initialize(int zMQport) {
+        if (INSTANCE == null) {
+            INSTANCE = new MonitoringMessageSender(zMQport);
+            INSTANCE.start();
+        }
+    }
 
     private final BlockingQueue<Map<String, ?>> queue = new LinkedTransferQueue<>();
 
+    /**
+     * Zero mq socket
+     */
+    private final ZMQ.Socket zContextSocket;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public MonitoringMessageSender(int zMQport) {
-        this.zMQport = zMQport;
+    private MonitoringMessageSender(int zMQport) {
+        LOGGER.info("Initializing ZeroMQ on port " + zMQport);
+        ZContext zContext = new ZContext(1);
+        zContextSocket = zContext.createSocket(ZMQ.PUSH);
+        zContextSocket.setLinger(0);
+        zContextSocket.bind("tcp://127.0.0.1:" + zMQport);
+        LOGGER.info("ZeroMQ initialized");
     }
 
-    public Queue<Map<String, ?>> getQueue() {
-        return queue;
+    /**
+     * Get the queue to send messages to, must be called after #initialize.
+     *
+     * @return a non-null queue
+     */
+    public static Queue<Map<String, ?>> getQueue() {
+        if (INSTANCE == null) {
+            throw new RuntimeException("Not initialized");
+        }
+        return INSTANCE.queue;
     }
 
     @Override
     public void run() {
-        LOGGER.info("Initializing ZeroMQ");
-        ZContext zContext = new ZContext(1);
-        ZMQ.Socket zContextSocket = zContext.createSocket(ZMQ.PUSH);
-        zContextSocket.setLinger(0);
-        zContextSocket.bind("tcp://127.0.0.1:" + zMQport);
-        LOGGER.info("ZeroMQ initialized");
         while (true) {
             try {
                 Map<String, ?> message = queue.take();

@@ -23,16 +23,15 @@ public class MiddleEndController {
     @Autowired
     private Environment environment;
 
+    @Autowired
     private RedisProvider redisProvider;
 
     private String redisKey;
 
     @PostConstruct
     private void postConstruct() {
-        redisProvider = new RedisProvider(Integer.parseInt(environment.getProperty("redis.port")));
         redisKey = environment.getProperty("redis.key");
     }
-
 
     @RequestMapping(
             value = "/endpoint1",

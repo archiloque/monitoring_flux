@@ -27,14 +27,14 @@ public class RecordingFilter implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-    throws IOException, ServletException {
-        
-    	RecordingServletResponse recordingServletResponse = 
-        		new RecordingServletResponse((HttpServletResponse) response);
-        
-        MonitoringServletRequest monitoringServletRequest = 
-        		new MonitoringServletRequest((HttpServletRequest) request);
- 
+            throws IOException, ServletException {
+
+        RecordingServletResponse recordingServletResponse =
+                new RecordingServletResponse((HttpServletResponse) response);
+
+        MonitoringServletRequest monitoringServletRequest =
+                new MonitoringServletRequest((HttpServletRequest) request);
+
         chain.doFilter(monitoringServletRequest, recordingServletResponse);
     }
 

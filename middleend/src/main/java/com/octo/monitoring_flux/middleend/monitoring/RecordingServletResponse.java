@@ -46,14 +46,9 @@ public class RecordingServletResponse extends HttpServletResponseWrapper {
     /**
      * Get the response content.
      */
-    public Map<String, ?> getResponseContent() {
+    public String getResponseContent() {
         if (recordingServletOutputStream != null) {
-            try {
-                return mapReader.readValue(recordingServletOutputStream.getContent());
-            } catch (IOException e) {
-                LOGGER.info("Can't deserialize [" + recordingServletOutputStream.getContent() + "]");
-                return null;
-            }
+            return recordingServletOutputStream.getContent();
         } else {
             return null;
         }

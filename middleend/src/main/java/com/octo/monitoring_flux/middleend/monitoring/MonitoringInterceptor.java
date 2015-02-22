@@ -1,5 +1,6 @@
 package com.octo.monitoring_flux.middleend.monitoring;
 
+import com.octo.monitoring_flux.shared.MonitoringMessenger;
 import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,29 +21,29 @@ public class MonitoringInterceptor extends HandlerInterceptorAdapter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringInterceptor.class);
 
-    private final MonitoringUtilities monitoringUtilities = new MonitoringUtilities();
+    private final MonitoringMessenger monitoringMessenger;
 
-    public MonitoringInterceptor(int zMQPort) {
-        MonitoringUtilities.initialize(zMQPort);
+    public MonitoringInterceptor(String moduleType, String moduleId, int zMQPort) {
+        monitoringMessenger = new MonitoringMessenger(moduleType, moduleId, zMQPort);
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if (request instanceof MonitoringServletRequest) {
             MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
-            Map<String, Object> header = getHeaderFromRequest(monitoringServletRequest);
-            String receivedServiceCallTimestamp = monitoringServletRequest.getInitialTimestamp();
-            header.put("middleend_starting_service_call_timestamp", receivedServiceCallTimestamp);
-            sendMonitoringMessage(
-                    "starting_service_call",
-                    receivedServiceCallTimestamp,
-                    monitoringUtilities.createMonitoringMessage(
-                            header,
-                            monitoringServletRequest.getRequestContent(),
-                            null,
-                            monitoringServletRequest.getAllHeaders(),
-                            null)
-            );
+            monitoringMessenger.sendMonitoringMessage(
+                    monitoringServletRequest.getCorrelationId(),
+                    monitoringServletRequest.getEndpoint(),
+
+                    "Begin call",
+                    monitoringServletRequest.getInitialTimestampAsString(),
+                    monitoringServletRequest.getInitialTimestampAsString(),
+                    null,
+                    null,
+                    monitoringServletRequest.getRequestContent(),
+                    monitoringServletRequest.getAllHeaders(),
+                    null,
+                    null);
         } else {
             LOGGER.info(request + " is not a MonitoringServletRequest");
         }
@@ -54,22 +56,27 @@ public class MonitoringInterceptor extends HandlerInterceptorAdapter {
             MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
             RecordingServletResponse recordingServletResponse = (RecordingServletResponse) response;
 
-            String finalTimestamp = monitoringUtilities.getTimeStampAsRfc339();
+            Date finalTimestamp = MonitoringUtilities.getCurrentTimestamp();
+            String finalTimestampAsString = MonitoringUtilities.formatDateAsRfc339(finalTimestamp);
 
-            Map<String, Object> header = getHeaderFromRequest(monitoringServletRequest);
-            String receivedServiceCallTimestamp = monitoringServletRequest.getInitialTimestamp();
-            header.put("middleend_starting_service_call_timestamp", receivedServiceCallTimestamp);
-            header.put("middleend_end_service_call_timestamp", finalTimestamp);
-            sendMonitoringMessage(
-                    "ending_service_call",
-                    finalTimestamp,
-                    monitoringUtilities.createMonitoringMessage(
-                            header,
-                            monitoringServletRequest.getRequestContent(),
-                            recordingServletResponse.getResponseContent(),
-                            monitoringServletRequest.getAllHeaders(),
-                            null)
-            );
+            Map<String, Object> responseForMonitoring = new HashMap<>();
+            responseForMonitoring.put("code", response.getStatus());
+            responseForMonitoring.put("content", recordingServletResponse.getResponseContent());
+
+            monitoringMessenger.sendMonitoringMessage(
+                    monitoringServletRequest.getCorrelationId(),
+                    monitoringServletRequest.getEndpoint(),
+                    "End call",
+                    finalTimestampAsString,
+                    monitoringServletRequest.getInitialTimestampAsString(),
+                    finalTimestampAsString,
+                    ((double) (finalTimestamp.getTime() - monitoringServletRequest.getInitialTimestamp().getTime())) / 1000,
+                    monitoringServletRequest.getRequestContent(),
+                    monitoringServletRequest.getAllHeaders(),
+                    responseForMonitoring,
+                    null);
+
+
         } else {
             if (!(request instanceof MonitoringServletRequest)) {
                 LOGGER.info(request + " is not a MonitoringServletRequest");
@@ -81,27 +88,8 @@ public class MonitoringInterceptor extends HandlerInterceptorAdapter {
         super.postHandle(request, response, handler, modelAndView);
     }
 
-    private Map<String, Object> getHeaderFromRequest(MonitoringServletRequest monitoringServletRequest) {
-        Map<String, Object> header = new HashMap<>();
-        header.put("correlation_id", monitoringServletRequest.getCorrelationId());
-        header.put("path", monitoringServletRequest.getRequestURI());
-        return header;
-    }
-
-
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         super.afterCompletion(request, response, handler, ex);
-    }
-
-    /**
-     * Send a message to the monitoring system.
-     *
-     * @param messageType the message type
-     * @param timestamp   the message timestamp (may be null)
-     * @param content     the base message content
-     */
-    private void sendMonitoringMessage(String messageType, String timestamp, Map<String, Object> content) {
-        monitoringUtilities.sendMonitoringMessage(getClass(), messageType, timestamp, content);
     }
 }

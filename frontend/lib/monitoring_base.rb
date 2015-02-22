@@ -119,7 +119,7 @@ class MonitoringBase < AppBase
     real_headers = headers.merge(
         {
             'X-Correlation-id' => request.monitoring_info[:correlation_id],
-            'X-Starting-timestamp' => before_timestamp_string,
+            'X-Starting-Timestamp' => before_timestamp_string,
         })
 
     common_message =

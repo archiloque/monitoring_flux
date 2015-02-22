@@ -2,49 +2,75 @@ package com.octo.monitoring_flux.middleend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octo.monitoring_flux.middleend.monitoring.MonitoringServletRequest;
+import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
+import com.octo.monitoring_flux.shared.MonitoringMessenger;
 import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Redis-related functions.
  */
+@Component
 public class RedisProvider {
 
-    private final Jedis jedis;
+    @Autowired
+    private Environment environment;
 
-    private final MonitoringUtilities monitoringUtilities = new MonitoringUtilities();
+    private Jedis jedis;
+
+    private MonitoringMessenger monitoringMessenger;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisProvider.class);
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public RedisProvider(int redisPort) {
-        jedis = new Jedis("localhost", redisPort);
+    @PostConstruct
+    private void postConstruct() {
+        jedis = new Jedis("localhost", Integer.parseInt(getEnvironmentValue("redis.port")));
+        monitoringMessenger = new MonitoringMessenger(
+                getEnvironmentValue("app.name"),
+                getEnvironmentValue("app.name") + "." + ManagementFactory.getRuntimeMXBean().getName(),
+                Integer.parseInt(getEnvironmentValue("zeromq.port"))
+        );
         LOGGER.debug(jedis.ping());
     }
 
     public void postMessageToBackend(Class sender, HttpServletRequest request, String key, Object messageBody) {
         MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
 
-        String timestamp = monitoringUtilities.getTimeStampAsRfc339();
+        String timestamp = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
+
         Map<String, String> header = new HashMap<>();
-        header.put("correlation_id", monitoringServletRequest.getCorrelationId());
-        header.put("timestamp", timestamp);
+        header.put(MonitoringMessagesKeys.MONITORING_MESSAGE_CORRELATION_ID, monitoringServletRequest.getCorrelationId());
+        header.put(MonitoringMessagesKeys.MONITORING_MESSAGE_TIMESTAMP, timestamp);
         Map<String, Object> message = new HashMap<>();
         message.put("header", header);
         message.put("body", messageBody);
-        monitoringUtilities.sendMonitoringMessage(
-                sender,
+
+        monitoringMessenger.sendMonitoringMessage(
+                monitoringServletRequest.getCorrelationId(),
+                monitoringServletRequest.getEndpoint(),
                 "Send message to backend",
                 timestamp,
-                message
+                timestamp,
+                null,
+                null,
+                messageBody,
+                null,
+                null,
+                null
         );
         String jsonMessage = null;
         try {
@@ -55,6 +81,10 @@ public class RedisProvider {
         }
         LOGGER.debug("Posting message to [" + key + "] " + jsonMessage);
         jedis.rpush(key, jsonMessage);
+    }
+
+    private String getEnvironmentValue(String key) {
+        return environment.getProperty(key);
     }
 
 }

@@ -10,11 +10,13 @@ import javax.servlet.http.HttpServletRequest;
  * A ServletInputStream that record the request as it's being read.
  * Use #getContent to get the content.
  */
- class RecordingServletInputStream extends ServletInputStream {
+class RecordingServletInputStream extends ServletInputStream {
 
     private final ByteArrayOutputStream byteArrayOutputStream;
 
-    /** InputStream. */
+    /**
+     * InputStream.
+     */
     private final ServletInputStream servletInputStream;
 
     /**

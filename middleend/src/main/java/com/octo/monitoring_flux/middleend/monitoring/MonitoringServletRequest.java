@@ -1,23 +1,22 @@
 package com.octo.monitoring_flux.middleend.monitoring;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An HttpServletRequestWrapper that record the request content and provide some helpers.
@@ -33,8 +32,6 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
 
     private RecordingServletInputStream recordingServletInputStream;
 
-    private final static MonitoringUtilities MONITORING_UTILITIES = new MonitoringUtilities();
-
     /**
      * Correlation id;
      */
@@ -48,7 +45,12 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
     /**
      * Timestamp when message has been received.
      */
-    private final String initialTimestamp = MONITORING_UTILITIES.getTimeStampAsRfc339();
+    private final Date initialTimestamp = MonitoringUtilities.getCurrentTimestamp();
+
+    /**
+     * Timestamp when message has been received.
+     */
+    private final String initialTimestampAsString = MonitoringUtilities.formatDateAsRfc339(initialTimestamp);
 
     public MonitoringServletRequest(HttpServletRequest request) {
         super(request);
@@ -56,9 +58,9 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
 
         String correlationIdCandidate;
 
-        correlationIdCandidate = httpServletRequest.getHeader("correlation)id");
+        correlationIdCandidate = httpServletRequest.getHeader("X-Correlation-id");
         if (correlationIdCandidate == null) {
-            correlationIdCandidate = MONITORING_UTILITIES.createCorrelationId();
+            correlationIdCandidate = MonitoringUtilities.createCorrelationId();
         }
         correlationId = correlationIdCandidate;
 
@@ -124,8 +126,19 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
     /**
      * The initial timestamp.
      */
-    public String getInitialTimestamp() {
+    public Date getInitialTimestamp() {
         return initialTimestamp;
+    }
+
+    /**
+     * The initial timestamp as String.
+     */
+    public String getInitialTimestampAsString() {
+        return initialTimestampAsString;
+    }
+
+    public String getEndpoint() {
+        return getMethod() + " " + getRequestURI();
     }
 
     @Override
@@ -136,8 +149,6 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
                 ", initialTimestamp='" + initialTimestamp + '\'' +
                 '}';
     }
-
-    
 
 
 }
