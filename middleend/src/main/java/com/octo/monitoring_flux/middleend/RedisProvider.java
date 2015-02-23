@@ -28,26 +28,38 @@ public class RedisProvider {
     @Autowired
     private Environment environment;
 
-    private Jedis jedis;
-
-    private MonitoringMessenger monitoringMessenger;
-
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisProvider.class);
 
+    /**
+     * Jedis instance to send message to Redis.
+     */
+    private Jedis jedis;
+
+    /**
+     * Used to send copy of messages to the monitoring.
+     */
+    private MonitoringMessenger monitoringMessenger;
+
+    /**
+     * Object reader to serialize json messages.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     private void postConstruct() {
-        jedis = new Jedis("localhost", Integer.parseInt(getEnvironmentValue("redis.port")));
+        jedis = new Jedis("localhost", Integer.parseInt(environment.getProperty("redis.port")));
         monitoringMessenger = new MonitoringMessenger(
-                getEnvironmentValue("app.name"),
-                getEnvironmentValue("app.name") + "." + ManagementFactory.getRuntimeMXBean().getName(),
-                Integer.parseInt(getEnvironmentValue("zeromq.port"))
+                environment.getProperty("app.name"),
+                environment.getProperty("app.name") + "." + ManagementFactory.getRuntimeMXBean().getName(),
+                Integer.parseInt(environment.getProperty("zeromq.port"))
         );
         LOGGER.debug(jedis.ping());
     }
 
-    public void postMessageToBackend(Class sender, HttpServletRequest request, String key, Object messageBody) {
+    public void postMessageToBackend(HttpServletRequest request, String key, Object messageBody) {
         MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
 
         String timestamp = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
@@ -81,10 +93,6 @@ public class RedisProvider {
         }
         LOGGER.debug("Posting message to [" + key + "] " + jsonMessage);
         jedis.rpush(key, jsonMessage);
-    }
-
-    private String getEnvironmentValue(String key) {
-        return environment.getProperty(key);
     }
 
 }

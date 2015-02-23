@@ -3,7 +3,7 @@ package com.octo.monitoring_flux.backend;
 import java.util.Map;
 
 /**
- * Implement a simple backend.
+ * Implements a simple backend.
  */
 public class Backend extends ApplicationBase {
 

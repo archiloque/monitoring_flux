@@ -24,12 +24,24 @@ import java.util.Map;
  */
 public class MonitoringServletRequest extends HttpServletRequestWrapper {
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(MonitoringServletRequest.class);
 
+    /**
+     * Object reader to deserialize json messages.
+     */
     private final ObjectReader mapReader = new ObjectMapper().reader(Map.class);
 
+    /**
+     * The wrapped servlet.
+     */
     private final HttpServletRequest httpServletRequest;
 
+    /**
+     * Record the stream read from the servlet.
+     */
     private RecordingServletInputStream recordingServletInputStream;
 
     /**

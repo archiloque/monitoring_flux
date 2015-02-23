@@ -17,7 +17,6 @@ public class MonitoringMessenger {
      */
     private final String moduleType;
 
-
     /**
      * The module id.
      */

@@ -29,8 +29,14 @@ public abstract class ApplicationBase {
      */
     private final MonitoringMessenger monitoringMessenger;
 
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
 
+    /**
+     * Object reader to deserialize json messages.
+     */
     private final ObjectReader mapReader = new ObjectMapper().reader(Map.class);
 
     /**

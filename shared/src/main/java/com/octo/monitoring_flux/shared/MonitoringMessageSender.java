@@ -36,6 +36,9 @@ public final class MonitoringMessageSender extends Thread {
         }
     }
 
+    /**
+     * Queue used to communicate with the thread sending the messages.
+     */
     private final BlockingQueue<Map<String, ?>> queue = new LinkedTransferQueue<>();
 
     /**
@@ -43,6 +46,9 @@ public final class MonitoringMessageSender extends Thread {
      */
     private final ZMQ.Socket zContextSocket;
 
+    /**
+     * Object reader to serialize json messages.
+     */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     private MonitoringMessageSender(int zMQport) {
