@@ -72,7 +72,6 @@ public class MonitoringMessenger {
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_HEADERS, headers);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_RESULT, result);
         monitoringMessageQueue.add(message);
-        monitoringMessageQueue.add(message);
     }
 
     /**
