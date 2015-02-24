@@ -34,7 +34,6 @@ public class MonitoringInterceptor extends HandlerInterceptorAdapter {
             monitoringMessenger.sendMonitoringMessage(
                     monitoringServletRequest.getCorrelationId(),
                     monitoringServletRequest.getEndpoint(),
-
                     "Begin call",
                     monitoringServletRequest.getInitialTimestampAsString(),
                     monitoringServletRequest.getInitialTimestampAsString(),
