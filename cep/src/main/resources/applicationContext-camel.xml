@@ -21,6 +21,16 @@
 		<route id="audit.frontend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:2200?socketType=PULL&amp;linger=0" />
 			<to uri="msg.processor" />
+		</route>
+		
+		<route id="middleend" trace="false">
+			<from uri="jeromq://tcp://127.0.0.1:2201?socketType=PULL&amp;linger=0" />
+			<to uri="msg.processor" />
+		</route>	
+		
+		<route id="backend" trace="false">
+			<from uri="jeromq://tcp://127.0.0.1:2202?socketType=PULL&amp;linger=0" />
+			<to uri="msg.processor" />
 		</route>	
 		
 		<!-- Process news -->

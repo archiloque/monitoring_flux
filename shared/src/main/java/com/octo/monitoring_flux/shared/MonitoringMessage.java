@@ -41,10 +41,10 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	private Double elapsedTime;
 	
 	/** parameters. */
-	private Object params;
+	private Map<String, Object> params;
 	
 	/** headers. */
-	private Object headers;
+	private Map<String, Object> headers;
 	
 	/** method results. */
 	private Object result;
@@ -86,6 +86,7 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	 *
 	 * @param message
 	 */
+	@SuppressWarnings("unchecked")
 	public MonitoringMessage(Map<String, Object> msg) {
 		if (msg == null) return;
 		correlationId 	= (msg.containsKey(MONITORING_MESSAGE_CORRELATION_ID)) ? (String) msg.get(MONITORING_MESSAGE_CORRELATION_ID) : null;
@@ -97,9 +98,9 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 		beginTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_BEGIN_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_BEGIN_TIMESTAMP) : null;
 		endTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_END_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_END_TIMESTAMP) : null;
 		elapsedTime 	= (msg.containsKey(MONITORING_MESSAGE_ELAPSED_TIME)) ? (Double) msg.get(MONITORING_MESSAGE_ELAPSED_TIME) : null;
-		params 			= (msg.containsKey(MONITORING_MESSAGE_PARAMS)) ? (String) msg.get(MONITORING_MESSAGE_PARAMS) : null;
-		headers 		= (msg.containsKey(MONITORING_MESSAGE_HEADERS)) ? (String) msg.get(MONITORING_MESSAGE_HEADERS) : null;
-		result 			= (msg.containsKey(MONITORING_MESSAGE_RESULT)) ? (String) msg.get(MONITORING_MESSAGE_RESULT) : null;
+		params 			= (msg.containsKey(MONITORING_MESSAGE_PARAMS)) ? (Map<String, Object>) msg.get(MONITORING_MESSAGE_PARAMS) : null;
+		headers 		= (msg.containsKey(MONITORING_MESSAGE_HEADERS)) ? (Map<String, Object>) msg.get(MONITORING_MESSAGE_HEADERS) : null;
+		result 			= (msg.containsKey(MONITORING_MESSAGE_RESULT)) ? (Object) msg.get(MONITORING_MESSAGE_RESULT) : null;
 		initialContent  = msg;
 	}
 	
@@ -216,44 +217,7 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	public void setElapsedTime(Double elapsedTime) {
 		this.elapsedTime = elapsedTime;
 	}
-
-	/**
-	 * Getter accessor for attribute 'params'.
-	 *
-	 * @return
-	 *       current value of 'params'
-	 */
-	public Object getParams() {
-		return params;
-	}
-
-	/**
-	 * Setter accessor for attribute 'params'.
-	 * @param params
-	 * 		new value for 'params '
-	 */
-	public void setParams(Object params) {
-		this.params = params;
-	}
-
-	/**
-	 * Getter accessor for attribute 'headers'.
-	 *
-	 * @return
-	 *       current value of 'headers'
-	 */
-	public Object getHeaders() {
-		return headers;
-	}
-
-	/**
-	 * Setter accessor for attribute 'headers'.
-	 * @param headers
-	 * 		new value for 'headers '
-	 */
-	public void setHeaders(Object headers) {
-		this.headers = headers;
-	}
+	
 
 	/**
 	 * Getter accessor for attribute 'result'.
@@ -353,4 +317,43 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	public void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
 	}
+
+	/**
+	 * Getter accessor for attribute 'headers'.
+	 *
+	 * @return
+	 *       current value of 'headers'
+	 */
+	public Map<String, Object> getHeaders() {
+		return headers;
+	}
+
+	/**
+	 * Setter accessor for attribute 'headers'.
+	 * @param headers
+	 * 		new value for 'headers '
+	 */
+	public void setHeaders(Map<String, Object> headers) {
+		this.headers = headers;
+	}
+
+	/**
+	 * Getter accessor for attribute 'params'.
+	 *
+	 * @return
+	 *       current value of 'params'
+	 */
+	public Map<String, Object> getParams() {
+		return params;
+	}
+
+	/**
+	 * Setter accessor for attribute 'params'.
+	 * @param params
+	 * 		new value for 'params '
+	 */
+	public void setParams(Map<String, Object> params) {
+		this.params = params;
+	}
+
 }

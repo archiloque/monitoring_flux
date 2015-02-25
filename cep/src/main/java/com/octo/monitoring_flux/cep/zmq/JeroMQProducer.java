@@ -22,7 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The HelloWorld producer.
+ * Message producer to send Data into ZeroMQ 
+ *
+ * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
+ *
  */
 public class JeroMQProducer extends DefaultProducer {
     

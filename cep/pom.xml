@@ -25,6 +25,11 @@
 
 	<dependencies>
 
+  		<dependency>
+            <groupId>com.octo.monitoring_flux</groupId>
+            <artifactId>monitoring-flux-shared</artifactId>
+        </dependency>
+        
 		<!-- CAMEL -->
 		<dependency>
 			<groupId>org.apache.camel</groupId>
