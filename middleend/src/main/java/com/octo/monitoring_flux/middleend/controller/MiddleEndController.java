@@ -23,9 +23,15 @@ public class MiddleEndController {
     @Autowired
     private Environment environment;
 
+    /**
+     * Redis access.
+     */
     @Autowired
     private RedisProvider redisProvider;
 
+    /**
+     * Key to be used to push messages in Redis.
+     */
     private String redisKey;
 
     @PostConstruct
@@ -50,7 +56,7 @@ public class MiddleEndController {
     )
     public EndPoint2Response endpoint2(@RequestBody EndPoint2Request endPoint2Request, HttpServletRequest request) {
         for (int i = 0; i < endPoint2Request.getNumberOfMessages(); i++) {
-            redisProvider.postMessageToBackend(getClass(), request, redisKey, endPoint2Request);
+            redisProvider.postMessageToBackend(request, redisKey, endPoint2Request);
         }
         return new EndPoint2Response("OK");
     }

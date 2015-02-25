@@ -1,10 +1,9 @@
 package com.octo.monitoring_flux.middleend.monitoring;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  * A ServletInputStream that record the request as it's being read.
@@ -12,25 +11,21 @@ import javax.servlet.http.HttpServletRequest;
  */
 class RecordingServletInputStream extends ServletInputStream {
 
+    /**
+     * Contain the recorded request.
+     */
     private final ByteArrayOutputStream byteArrayOutputStream;
 
     /**
-     * InputStream.
+     * The wrapped ServletInputStream.
      */
     private final ServletInputStream servletInputStream;
 
-    /**
-     * @param httpServletRequest
-     * @throws IOException
-     */
     public RecordingServletInputStream(HttpServletRequest httpServletRequest) throws IOException {
         this.servletInputStream = httpServletRequest.getInputStream();
         this.byteArrayOutputStream = new ByteArrayOutputStream();
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read()
-     */
     @Override
     public int read() throws IOException {
         int value = servletInputStream.read();
@@ -38,16 +33,14 @@ class RecordingServletInputStream extends ServletInputStream {
         return value;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#close()
-     */
     @Override
     public void close() throws IOException {
         servletInputStream.close();
     }
 
     /**
-     * @return
+     * Get the recorded content.
+     * @return a non-null String
      */
     public String getContent() {
         return byteArrayOutputStream.toString();

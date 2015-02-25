@@ -32,10 +32,8 @@ public class RedisProvider {
 
     private MonitoringMessenger monitoringMessenger;
 
-    /** logger for this class. */
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisProvider.class);
 
-    /** Jackson Mapper. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -49,7 +47,7 @@ public class RedisProvider {
         LOGGER.debug(jedis.ping());
     }
 
-    public void postMessageToBackend(Class sender, HttpServletRequest request, String key, Object messageBody) {
+    public void postMessageToBackend(HttpServletRequest request, String key, Object messageBody) {
         MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
 
         String timestamp = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
