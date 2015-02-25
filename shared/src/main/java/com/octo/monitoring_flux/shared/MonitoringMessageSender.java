@@ -1,16 +1,17 @@
 package com.octo.monitoring_flux.shared;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zeromq.ZContext;
-import org.zeromq.ZMQ;
-
 import java.io.IOException;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Thread that send messages from a BlockingQueue to ZeroMQ.
@@ -41,6 +42,9 @@ public final class MonitoringMessageSender extends Thread {
      */
     private final BlockingQueue<Map<String, ?>> queue = new LinkedTransferQueue<>();
 
+    /** Set as attribute to remove memeory leak. */
+  	private ZContext zContext;
+  	
     /**
      * Zero mq socket
      */
@@ -51,9 +55,11 @@ public final class MonitoringMessageSender extends Thread {
      */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+  
+
     private MonitoringMessageSender(int zMQport) {
         LOGGER.info("Initializing ZeroMQ on port " + zMQport);
-        ZContext zContext = new ZContext(1);
+        zContext = new ZContext(1);
         zContextSocket = zContext.createSocket(ZMQ.PUSH);
         zContextSocket.setLinger(0);
         zContextSocket.bind("tcp://127.0.0.1:" + zMQport);

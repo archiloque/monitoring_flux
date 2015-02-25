@@ -28,6 +28,16 @@ public class MonitoringMessenger {
         this.moduleType = moduleType;
         this.moduleId = moduleId;
     }
+    
+    /**
+     * Send dedicated message.
+     *
+     * @param mm
+     * 		target message to be sent
+     */
+    public void sendMonitoringMessage(MonitoringMessage mm) {
+        monitoringMessageQueue.add(mm.asMessage());
+    }
 
     /**
      * Send a message to the monitoring system.
@@ -57,7 +67,7 @@ public class MonitoringMessenger {
             Object result,
             Map<String, Object> initialContent) {
 
-        Map<String, Object> message = new HashMap<>((initialContent == null) ? Collections.EMPTY_MAP : initialContent);
+        Map<String, Object> message = new HashMap<>((initialContent == null) ? Collections.emptyMap() : initialContent);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_CORRELATION_ID, correlationId);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_ENDPOINT, endPoint);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_MODULE_TYPE, moduleType);

@@ -1,14 +1,16 @@
 package com.octo.monitoring_flux.shared;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * POJO representing a monitoring message.
  *
- * @author clunven
+ * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
  */
-public class MonitoringMessage implements Serializable {
+public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	
 	/** Serial. */
 	private static final long serialVersionUID = -5450039726854700100L;
@@ -19,11 +21,87 @@ public class MonitoringMessage implements Serializable {
 	/** Producer endpoint. */
 	private String endPoint;
 	
+	private String moduleType;
+	
+	private String moduleId;
+	
 	/** Message timestamp. */
 	private String timeStamp;
 	
+	/** Message type. */
+	private String messageType;
+	
 	/** start date. */
 	private String beginTimestamp;
+	
+	/** end date. */
+	private String endTimestamp;
+	
+	/** action duration. */
+	private Double elapsedTime;
+	
+	/** parameters. */
+	private Object params;
+	
+	/** headers. */
+	private Object headers;
+	
+	/** method results. */
+	private Object result;
+	
+	/** body. */
+	private Map<String, Object> initialContent;
+	
+	/**
+	 * Serialize as Object.
+	 *
+	 * @return
+	 * 		target object
+	 */
+	public Map < String, Object> asMessage() {
+		  Map<String, Object> message = new HashMap<>((initialContent== null) ? Collections.emptyMap() : initialContent);
+		  if (correlationId != null) message.put(MONITORING_MESSAGE_CORRELATION_ID, correlationId);
+		  if (endPoint != null) message.put(MONITORING_MESSAGE_ENDPOINT, endPoint);
+		  if (correlationId != null) message.put(MONITORING_MESSAGE_MODULE_TYPE, moduleType);
+		  if (correlationId != null) message.put(MONITORING_MESSAGE_MODULE_ID, moduleId);
+		  if (correlationId != null) message.put(MONITORING_MESSAGE_MESSAGE_TYPE, messageType);
+		  if (correlationId != null) message.put(MONITORING_MESSAGE_TIMESTAMP, timeStamp);
+		  if (beginTimestamp != null) message.put(MONITORING_MESSAGE_BEGIN_TIMESTAMP, beginTimestamp);
+		  if (endTimestamp != null) message.put(MONITORING_MESSAGE_END_TIMESTAMP, endTimestamp);
+          if (elapsedTime != null) message.put(MONITORING_MESSAGE_ELAPSED_TIME, elapsedTime);
+          if (params != null) message.put(MONITORING_MESSAGE_PARAMS, params);
+          if (headers != null) message.put(MONITORING_MESSAGE_HEADERS, headers);
+          if (result != null) message.put(MONITORING_MESSAGE_RESULT, result);
+          return message;
+	}
+	
+	/**
+	 * Default Constructor.
+	 */
+	public MonitoringMessage() {
+	}
+	
+	/**
+	 * Marshalling from JSON Object.
+	 *
+	 * @param message
+	 */
+	public MonitoringMessage(Map<String, Object> msg) {
+		if (msg == null) return;
+		correlationId 	= (msg.containsKey(MONITORING_MESSAGE_CORRELATION_ID)) ? (String) msg.get(MONITORING_MESSAGE_CORRELATION_ID) : null;
+		endPoint 		= (msg.containsKey(MONITORING_MESSAGE_ENDPOINT)) ? (String) msg.get(MONITORING_MESSAGE_ENDPOINT) : null;
+		moduleType 		= (msg.containsKey(MONITORING_MESSAGE_MODULE_TYPE)) ? (String) msg.get(MONITORING_MESSAGE_MODULE_TYPE) : null;
+		moduleId 		= (msg.containsKey(MONITORING_MESSAGE_MODULE_ID)) ? (String) msg.get(MONITORING_MESSAGE_MODULE_ID) : null;
+		messageType		= (msg.containsKey(MONITORING_MESSAGE_MESSAGE_TYPE)) ? (String) msg.get(MONITORING_MESSAGE_MESSAGE_TYPE) : null;
+		timeStamp 		= (msg.containsKey(MONITORING_MESSAGE_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_TIMESTAMP) : null;
+		beginTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_BEGIN_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_BEGIN_TIMESTAMP) : null;
+		endTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_END_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_END_TIMESTAMP) : null;
+		elapsedTime 	= (msg.containsKey(MONITORING_MESSAGE_ELAPSED_TIME)) ? (Double) msg.get(MONITORING_MESSAGE_ELAPSED_TIME) : null;
+		params 			= (msg.containsKey(MONITORING_MESSAGE_PARAMS)) ? (String) msg.get(MONITORING_MESSAGE_PARAMS) : null;
+		headers 		= (msg.containsKey(MONITORING_MESSAGE_HEADERS)) ? (String) msg.get(MONITORING_MESSAGE_HEADERS) : null;
+		result 			= (msg.containsKey(MONITORING_MESSAGE_RESULT)) ? (String) msg.get(MONITORING_MESSAGE_RESULT) : null;
+		initialContent  = msg;
+	}
 	
 	/**
 	 * Getter accessor for attribute 'correlationId'.
@@ -215,22 +293,64 @@ public class MonitoringMessage implements Serializable {
 		this.initialContent = initialContent;
 	}
 
-	/** end date. */
-	private String endTimestamp;
-	
-	/** action duration. */
-	private Double elapsedTime;
-	
-	/** parameters. */
-	private Object params;
-	
-	/** headers. */
-	private Object headers;
-	
-	/** method results. */
-	private Object result;
-	
-	/** body. */
-	private Map<String, Object> initialContent;
+	/**
+	 * Getter accessor for attribute 'messageType'.
+	 *
+	 * @return
+	 *       current value of 'messageType'
+	 */
+	public String getMessageType() {
+		return messageType;
+	}
 
+	/**
+	 * Setter accessor for attribute 'messageType'.
+	 * @param messageType
+	 * 		new value for 'messageType '
+	 */
+	public void setMessageType(String messageType) {
+		this.messageType = messageType;
+	}
+
+
+	/**
+	 * Getter accessor for attribute 'moduleType'.
+	 *
+	 * @return
+	 *       current value of 'moduleType'
+	 */
+	public String getModuleType() {
+		return moduleType;
+	}
+
+
+	/**
+	 * Setter accessor for attribute 'moduleType'.
+	 * @param moduleType
+	 * 		new value for 'moduleType '
+	 */
+	public void setModuleType(String moduleType) {
+		this.moduleType = moduleType;
+	}
+
+
+	/**
+	 * Getter accessor for attribute 'moduleId'.
+	 *
+	 * @return
+	 *       current value of 'moduleId'
+	 */
+	public String getModuleId() {
+		return moduleId;
+	}
+
+
+	/**
+	 * Setter accessor for attribute 'moduleId'.
+	 * @param moduleId
+	 * 		new value for 'moduleId '
+	 */
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
+	}
 }

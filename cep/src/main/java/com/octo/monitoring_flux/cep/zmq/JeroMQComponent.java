@@ -22,13 +22,14 @@ import org.apache.camel.Endpoint;
 import org.apache.camel.impl.DefaultComponent;
 
 /**
- * Represents the component that manages {@link JeroMQEndpoint}.
+ * Represents the component that manages {@link JeroMQEndpoint}
+ *
+ * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
  */
 public class JeroMQComponent extends DefaultComponent {
     
     /** {@inheritDoc} */
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
-        
     	// Initialzize Target Endpoint
     	JeroMQEndpoint endpoint = new JeroMQEndpoint(uri, this);
     	// Defined URL
