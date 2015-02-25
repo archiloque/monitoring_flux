@@ -1,14 +1,5 @@
 package com.octo.monitoring_flux.backend;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
-import com.octo.monitoring_flux.shared.MonitoringMessenger;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Jedis;
-
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
@@ -19,62 +10,122 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import redis.clients.jedis.Jedis;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
+import com.octo.monitoring_flux.shared.MonitoringMessenger;
+import com.octo.monitoring_flux.shared.MonitoringUtilities;
+
 /**
  * Base structure to write a backend application to process messages.
  */
 public abstract class ApplicationBase {
 
-    /**
-     * Monitoring features
-     */
-    private final MonitoringMessenger monitoringMessenger;
+	/** Logger for this class. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
-
+	/** Monitoring features. */
+    private MonitoringMessenger monitoringMessenger;
+    
+    /** Jaclson Mapper. */
     private final ObjectReader mapReader = new ObjectMapper().reader(Map.class);
 
-    /**
-     * Value of the redis key to read from.
-     */
-    private final String redisKey;
+    /** Value of the redis key to read from. */
+    private String redisKey;
 
-    /**
-     * Thread pool in charge of processing the message.
-     */
+    /** Thread pool in charge of processing the message. */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
-
+    
+    /** Configuration informations. */
+    private Properties applicationProperties = new Properties();
+    
+    /** Connection redis. */
+    private Jedis redisConnection;
+    
+    /**
+     * Default Constructor
+     */
     protected ApplicationBase() {
-        Properties applicationProperties = new Properties();
-        try {
-            applicationProperties.load(getClass().getResourceAsStream("/backend.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    	
+    	// Load backend.properties file
+    	loadConfiguration();
 
-        monitoringMessenger = new MonitoringMessenger(
-                applicationProperties.getProperty("app.name"),
-                applicationProperties.getProperty("app.name") + "." + ManagementFactory.getRuntimeMXBean().getName(),
-                Integer.parseInt(applicationProperties.getProperty("zeromq.port"))
-        );
-        LOGGER.info("Initializing");
-        Jedis jedis = new Jedis("localhost", Integer.parseInt(applicationProperties.getProperty("redis.port")));
-        LOGGER.debug(jedis.ping());
-        LOGGER.info("Initialized");
-        redisKey = applicationProperties.getProperty("redis.key");
+    	// Init connection and listener to redis through dedidacted KEY
+    	initRedisConnection();
+    	
+    	// Init connection to zeroMQ
+    	initZeroMQConnection();
 
+    	// Start
         while (true) {
-            List<String> bundledMessage = jedis.blpop(0, redisKey);
+        	// Pop message from queue
+            List<String> bundledMessage = redisConnection.blpop(0, redisKey);
             LOGGER.info("Received a message");
+            
+            // Sending message to ZEROMQ
             processMessage(bundledMessage.get(1));
         }
     }
-
+    
+    /**
+     * Load configuration file (properties)
+     */
+    protected void loadConfiguration() {
+    	 try {
+             applicationProperties.load(getClass().getResourceAsStream("/backend.properties"));
+             LOGGER.info("Configuration file < backend.properties > is loaded");
+         } catch (IOException e) {
+            LOGGER.error("Cannot parse file backend.properties, check existence and rights", e);
+            System.exit(-3);
+         }
+    }
+    
+    /**
+     * Connect to redis
+     */
+    protected void initRedisConnection() {
+    	String redisHost = "localhost";
+    	int redisPort = Integer.parseInt(applicationProperties.getProperty("redis.port"));
+    	 LOGGER.info("Initializing Redis connection on <" + redisHost + ":" + redisPort + ">");
+    	try {
+	        redisKey = applicationProperties.getProperty("redis.key"); 
+    		redisConnection = new Jedis(redisHost, redisPort);
+    		LOGGER.debug("Try to ping Redis : " + redisConnection.ping());
+	        LOGGER.info("Redis connection ETABLISHED");
+    	} catch(RuntimeException re) {
+    		LOGGER.error("Cannot connect to REDISn check it's started and available on "+ redisHost + ":" + redisPort, re);
+    		System.exit(-1);
+    	}
+    }
+    
+    /**
+     * Connect to zeroMQ and initialize sender
+     */
+    protected void initZeroMQConnection() {
+    	int zmqPort = Integer.parseInt(applicationProperties.getProperty("zeromq.port"));
+    	try {
+	    	String moduleType = applicationProperties.getProperty("app.name");
+	    	String moduleId	= moduleType + "." + ManagementFactory.getRuntimeMXBean().getName();
+	    	monitoringMessenger = new MonitoringMessenger(moduleType, moduleId, zmqPort);
+	    	LOGGER.info("ZeroMQ connection ETABLISHED");
+    	} catch(RuntimeException re) {
+    		LOGGER.error("Cannot connect to ZeroMQ check it's started and available on port " + zmqPort, re);
+    		System.exit(-2);
+    	}
+    }
+    
     /**
      * Process a message arrived in the queue.
      *
      * @param message the raw message content.
      */
-    private void processMessage(String message) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void processMessage(String message) {
         LOGGER.info(message);
         Date receivedMessageTimestamp = MonitoringUtilities.getCurrentTimestamp();
         String receivedMessageTimestampAsString = MonitoringUtilities.formatDateAsRfc339(receivedMessageTimestamp);
@@ -105,6 +156,7 @@ public abstract class ApplicationBase {
                 null,
                 null
         );
+        // Java8 yeah...
         executorService.submit(() -> {
             LOGGER.info("Begin processing");
             String beginProcessingTimestampAsString = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
