@@ -17,7 +17,6 @@ public class MonitoringMessenger {
      */
     private final String moduleType;
 
-
     /**
      * The module id.
      */
@@ -71,7 +70,6 @@ public class MonitoringMessenger {
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_PARAMS, params);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_HEADERS, headers);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_RESULT, result);
-        monitoringMessageQueue.add(message);
         monitoringMessageQueue.add(message);
     }
 

@@ -1,0 +1,35 @@
+= Monitoring and CEP Application
+
+This applications read audit messages from ZeroMQ and push them to elastic search
+
+This app is written in Java 8 and relies on  link:http://camel.apache.org/[Apache Camel]
+
+The application connects to:
+- link:http://zeromq.org[ZeroMQ] to receive monitoring messages on ports `2200`,`2201`,`2202`
+- link:http://www.elasticsearch.org[Elasticsearch] to push everything into elasticsearch.
+
+The configuration can be changed in the application's `pom.xml` and in it's parent `pom.xml`.
+
+== Build
+
+- simply build all maven module by running `mvn install`
+
+== Start the app
+
+- ZeroMQ must be up and running to start the application
+
+
+- ElasticSearcg must be up and running to start the application
+- Install ElsaticSearch 1.4.4
+- Creation monitoring index curl -XPUT 'http://localhost:9200/monitoring/'
+curl -XPUT 'http://localhost:9200/monitoring/' -d
+
+- Install Kibana 1.4.4
+
+
+- You must have installed "monitoring-flux-shared" once in your local repository
+- in the application's directory run `mvn hawtio:camel` or simply `mvn camel:run` if you don't want the console
+
+== License
+
+Code (C) 2015 released under the MIT license
