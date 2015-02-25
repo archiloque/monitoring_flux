@@ -21,7 +21,7 @@ public class TestStandAloneCamel {
 	@Autowired
     protected CamelContext camelContext;
 	
-	@Produce(uri = "seda:monitoring")
+	@Produce(uri = "jeromq:tcp://127.0.0.1:2200?socketType=PUSH")
 	protected ProducerTemplate template;
 	 
 	@Test
@@ -29,8 +29,6 @@ public class TestStandAloneCamel {
 		camelContext.start();
 		Assert.assertEquals(ServiceStatus.Started, camelContext.getStatus());
 	    while(true) {
-	    	// Send a dummy message
-	    	template.sendBodyAndHeader("BODY", "foo", "bar");
 	    	Thread.sleep(1000);
 	    }
 	   

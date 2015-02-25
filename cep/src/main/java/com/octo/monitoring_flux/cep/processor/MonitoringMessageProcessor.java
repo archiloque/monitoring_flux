@@ -12,7 +12,8 @@ public class MonitoringMessageProcessor implements Processor {
 
 	/** {@inheritDoc} */
 	public void process(Exchange exchange) throws Exception {
-		System.out.println("Message capture.");
+		System.out.println("INCOMING->");
+		System.out.println(exchange.getIn().getBody());
 	}
 
 }

@@ -29,10 +29,14 @@ public abstract class ApplicationBase {
 	/** Logger for this class. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
 
-	/** Monitoring features. */
-    private MonitoringMessenger monitoringMessenger;
+    /**
+     * The logger.
+     */
+	private MonitoringMessenger monitoringMessenger;
     
-    /** Jaclson Mapper. */
+    /**
+     * Object reader to deserialize json messages.
+     */
     private final ObjectReader mapReader = new ObjectMapper().reader(Map.class);
 
     /** Value of the redis key to read from. */

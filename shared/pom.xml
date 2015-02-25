@@ -13,8 +13,7 @@
     <artifactId>monitoring-flux-shared</artifactId>
     <packaging>jar</packaging>
     <name>monitoring-flux-shared</name>
-    <version>0.1-SNAPSHOT</version>
-
+   
     <dependencies>
         <dependency>
             <groupId>org.zeromq</groupId>

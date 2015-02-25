@@ -32,8 +32,10 @@ public class RedisProvider {
 
     private MonitoringMessenger monitoringMessenger;
 
+    /** logger for this class. */
     private static final Logger LOGGER = LoggerFactory.getLogger(RedisProvider.class);
 
+    /** Jackson Mapper. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct

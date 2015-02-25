@@ -13,8 +13,7 @@
     <artifactId>monitoring-flux-middleend</artifactId>
     <packaging>jar</packaging>
     <name>monitoring-flux-middleend</name>
-    <version>0.1-SNAPSHOT</version>
-
+    
     <properties>
         <app.name>monitoring-flux-middleend</app.name>
         <zeromq.port>2201</zeromq.port>
@@ -22,6 +21,7 @@
     </properties>
 
     <dependencies>
+    
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -49,6 +49,7 @@
 
 
     <build>
+    
         <resources>
             <resource>
                 <directory>src/main/resources</directory>

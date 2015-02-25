@@ -1,6 +1,6 @@
 = Middle end app
 
-This applications exposes REST web services and send messages to a processign backend.
+This applications exposes REST web services and send messages to a processing backend.
 
 This app is written in Java 8 and relies on link:http://spring.io[Spring], it requires link:http://maven.apache.org[Maven].
 
@@ -18,7 +18,10 @@ The configuration can be changed in the application's `pom.xml` and in it's pare
 == Start the app
 
 - Redis must be up and running to start the application
+- You must have installed "monitoring-flux-shared" once in your local repository
 - in the application's directory run `mvn spring-boot:run`
+- The application should now be listening incoming request from on 8066 port
+
 
 == License
 

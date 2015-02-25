@@ -8,23 +8,24 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
-	
 	<bean id="msg.processor" class="com.octo.monitoring_flux.cep.processor.MonitoringMessageProcessor" />
 	
 	<!-- ~~~~~~~~~~~~~~~~~ -->
 	<!-- Camel Context     -->
 	<!-- ~~~~~~~~~~~~~~~~~ -->
-	<camelContext  xmlns="http://camel.apache.org/schema/spring" 
-	   id="octo.monitoring_flux.camelContext" trace="${log.verbose?false}"
-	   errorHandlerRef="errorHandler" >
+	<camelContext  
+		xmlns="http://camel.apache.org/schema/spring" id="octo.monitoring_flux.camelContext" trace="false">
 		 
-    	<propertyPlaceholder  id="properties"
-    	       ignoreMissingLocation="true"
-    	       location="monflux-conf.properties" />
-
+    	<propertyPlaceholder  id="properties" ignoreMissingLocation="true" location="monflux-conf.properties" />
+	
+		<route id="audit.frontend" trace="false">
+			<from uri="jeromq://tcp://127.0.0.1:2200?socketType=PULL&amp;linger=0" />
+			<to uri="msg.processor" />
+		</route>	
+		
 		<!-- Process news -->
-		<route id="msg.processor" trace="false">
-			<from uri="seda:monitoring" />
+		<route id="audit.simu" trace="false">
+			<from uri="direct:test" />
 			<to uri="msg.processor" />
 		</route>
 
@@ -39,22 +40,5 @@
   		<property name="ignoreUnresolvablePlaceholders" value="false" />
   		<property name="valueSeparator" 				value="?" />
 	</bean>
-	
-	<!-- ~~~~~~~~~~~~~~~~~ -->
-	<!-- Error Handler     -->
-	<!-- ~~~~~~~~~~~~~~~~~ -->
-	<bean id="errorHandler" class="org.apache.camel.builder.DeadLetterChannelBuilder">
-  		<property name="deadLetterUri" value="errorProcessor"/>
-	</bean>
-	
-	<bean id="errorProcessor" class="com.octo.monitoring_flux.cep.processor.ErrorHandlerProcessor" />
-	
-	<!-- ~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- Graceful shutdown...  -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~ -->
-	<bean class="org.apache.camel.impl.DefaultShutdownStrategy">
-		<property name="timeout" value="${shutdown.timeout?20}"/> 
-	</bean>
-	
 	
 </beans>
