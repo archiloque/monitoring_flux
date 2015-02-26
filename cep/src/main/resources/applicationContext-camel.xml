@@ -8,47 +8,33 @@
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 	
-	<bean id="msg.processor" class="com.octo.monitoring_flux.cep.processor.MonitoringMessageProcessor" />
+	<bean id="msg.processor" 
+		  class="com.octo.monitoring_flux.cep.processor.MonitoringMessageProcessor" />
 	
-	<!-- ~~~~~~~~~~~~~~~~~ -->
-	<!-- Camel Context     -->
-	<!-- ~~~~~~~~~~~~~~~~~ -->
-	<camelContext  
-		xmlns="http://camel.apache.org/schema/spring" id="octo.monitoring_flux.camelContext" trace="false">
-		 
-    	<propertyPlaceholder  id="properties" ignoreMissingLocation="true" location="monflux-conf.properties" />
-	
+	<!-- ****************** -->
+	<!-- *  Camel Context * -->
+	<!-- ****************** -->
+	<camelContext  xmlns="http://camel.apache.org/schema/spring" trace="false">
+		
+		<!-- FrontEnd .to. CEP .to. ElasticSearch -->
 		<route id="audit.frontend" trace="false">
-			<from uri="jeromq://tcp://127.0.0.1:2200?socketType=PULL&amp;linger=0" />
+			<from uri="jeromq://tcp://127.0.0.1:2200?socketType=PULL&amp;linger=0&amp;label=frontend" />
 			<to uri="msg.processor" />
+			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
 		</route>
 		
 		<route id="middleend" trace="false">
-			<from uri="jeromq://tcp://127.0.0.1:2201?socketType=PULL&amp;linger=0" />
+			<from uri="jeromq://tcp://127.0.0.1:2201?socketType=PULL&amp;linger=0&amp;label=middleend" />
 			<to uri="msg.processor" />
+			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
 		</route>	
 		
 		<route id="backend" trace="false">
-			<from uri="jeromq://tcp://127.0.0.1:2202?socketType=PULL&amp;linger=0" />
+			<from uri="jeromq://tcp://127.0.0.1:2202?socketType=PULL&amp;linger=0&amp;label=backend" />
 			<to uri="msg.processor" />
-		</route>	
-		
-		<!-- Process news -->
-		<route id="audit.simu" trace="false">
-			<from uri="direct:test" />
-			<to uri="msg.processor" />
+			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
 		</route>
 
 	</camelContext>
-	
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<!-- Substitute external properties    -->
-	<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-	<bean class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
-  		<property name="locations" 						value="classpath:monflux-conf.properties"/>
-  		<property name="ignoreResourceNotFound" 		value="false" /> 
-  		<property name="ignoreUnresolvablePlaceholders" value="false" />
-  		<property name="valueSeparator" 				value="?" />
-	</bean>
 	
 </beans>

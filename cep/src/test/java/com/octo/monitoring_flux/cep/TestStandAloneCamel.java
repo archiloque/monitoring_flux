@@ -1,10 +1,6 @@
 package com.octo.monitoring_flux.cep;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
-import org.apache.camel.ServiceStatus;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +17,16 @@ public class TestStandAloneCamel {
 	@Autowired
     protected CamelContext camelContext;
 	
-	@Produce(uri = "jeromq:tcp://127.0.0.1:2200?socketType=PUSH")
-	protected ProducerTemplate template;
-	 
 	@Test
 	public void testRunCamel() throws Exception {
 		camelContext.start();
-		Assert.assertEquals(ServiceStatus.Started, camelContext.getStatus());
-	    while(true) {
-	    	Thread.sleep(1000);
-	    }
-	   
+		while(true) {
+			Thread.sleep(2000);
+		}
+		
 	}
+	
+	
 	
 	
 

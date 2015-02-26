@@ -34,7 +34,7 @@ public class JeroMQComponent extends DefaultComponent {
     	JeroMQEndpoint endpoint = new JeroMQEndpoint(uri, this);
     	// Defined URL
     	endpoint.setUrl(remaining);
-    	// Properties
+    	// Properties (introspection over socketType and linger)
         setProperties(endpoint, parameters);
         // Initialize connection
         return endpoint;

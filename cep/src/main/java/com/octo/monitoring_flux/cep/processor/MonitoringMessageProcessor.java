@@ -19,9 +19,11 @@ public class MonitoringMessageProcessor implements Processor {
 	
 	/** {@inheritDoc} */
 	public void process(Exchange exchange) throws Exception {
-		logger.info("Enter message Processor ");
 		MonitoringMessage mm = (MonitoringMessage) exchange.getOut().getBody();
-		logger.info("Message coming from " + mm.getModuleId());
+		logger.info("Message coming from " + mm.getModuleType() + "-" + mm.getModuleId());
+		
+		// Elastic Search expect a Map as Body
+		exchange.getOut().setBody(mm.asMessage());
 	}
 
 }

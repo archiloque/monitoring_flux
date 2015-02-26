@@ -32,7 +32,8 @@ public class JeroMQComponentTest extends CamelTestSupport {
 
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
-        return new RouteBuilder() {
+       
+    	return new RouteBuilder() {
             public void configure() {
                 from("jeromq://tcp://127.0.0.1:2200?socketType=PULL&linger=0").to("mock:result");
             }

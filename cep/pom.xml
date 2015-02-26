@@ -46,11 +46,23 @@
 			<artifactId>camel-stream</artifactId>
 			<version>${camel.version}</version>
 		</dependency>
-		 <dependency>
+		<dependency>
+    		<groupId>org.apache.camel</groupId>
+    		<artifactId>camel-elasticsearch</artifactId>
+    		<version>${camel.version}</version>
+		</dependency>
+		<dependency>
             <groupId>org.zeromq</groupId>
             <artifactId>jeromq</artifactId>
             <version>0.3.4</version>
         </dependency>
+        
+        <dependency>
+			<groupId>org.elasticsearch</groupId>
+			<artifactId>elasticsearch</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+
 		
 		<!-- SPRING -->
 		<dependency>
@@ -73,7 +85,7 @@
 			<artifactId>spring-tx</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
+		<!-- LOG -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>

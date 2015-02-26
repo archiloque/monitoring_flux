@@ -59,6 +59,7 @@ public class JeroMQProducer extends DefaultProducer {
     /** {@inheritDoc} */
     public void process(Exchange exchange) throws Exception {
        String message = (String) exchange.getIn().getBody();
+       // TODO PUSH
     }
 
 }

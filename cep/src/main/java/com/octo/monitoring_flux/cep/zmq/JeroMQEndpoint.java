@@ -44,6 +44,9 @@ public class JeroMQEndpoint extends DefaultEndpoint {
 	/** Target zMQ URL. */
 	private String url;
 	
+	/** Label of endpoint for logging. */
+	private String label = url;
+	
 	/**
      * Default constructor.
      */
@@ -152,4 +155,23 @@ public class JeroMQEndpoint extends DefaultEndpoint {
     public boolean isSingleton() {
         return true;
     }
+
+	/**
+	 * Getter accessor for attribute 'label'.
+	 *
+	 * @return
+	 *       current value of 'label'
+	 */
+	public String getLabel() {
+		return label;
+	}
+
+	/**
+	 * Setter accessor for attribute 'label'.
+	 * @param label
+	 * 		new value for 'label '
+	 */
+	public void setLabel(String label) {
+		this.label = label;
+	}
 }

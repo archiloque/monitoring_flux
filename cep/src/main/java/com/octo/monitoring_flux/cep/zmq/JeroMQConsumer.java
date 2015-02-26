@@ -61,6 +61,7 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
     public JeroMQConsumer(JeroMQEndpoint endpoint, Processor processor) {
         super(endpoint, processor);
         this.endpoint = endpoint;
+       
         // Read endpoint information and create a poller
         if ("PULL".equalsIgnoreCase(endpoint.getSocketType())) {
         	zContextSocket = endpoint.getJeromqContext().createSocket(ZMQ.PULL);
@@ -69,19 +70,22 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
         } else {
         	throw new IllegalArgumentException("Cannot create a poller correct value are PULL and SUBSCRIBE for socketType");
         }
+        
         // Linger
         zContextSocket.setLinger(endpoint.getLinger());
-        logger.info("Connecting to ZeroMQ : " + endpoint.getUrl() );
+        
         // URL
 	    zContextSocket.connect(endpoint.getUrl());
-	    logger.info("Connection OK");
+	    // if no label defined, set default
+	    if (endpoint.getLabel() == null) endpoint.setLabel(endpoint.getUrl());
+	    logger.info("ZeroMQ connection ETABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
     }
 
     /** {@inheritDoc} */
     @Override
     protected int poll() throws Exception {
     	String msg = new String(zContextSocket.recv(0));
-    	logger.info("Incoming message from " + endpoint.getUrl());
+    	logger.info("Incoming message from <" + endpoint.getLabel() + ">");
     	
     	// Create empty exchange
     	Exchange exchange = endpoint.createExchange();
