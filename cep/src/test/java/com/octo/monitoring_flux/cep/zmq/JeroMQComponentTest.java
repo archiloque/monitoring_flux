@@ -21,21 +21,45 @@ import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Test;
 
+/**
+ * This class test connectivity to ZeroMQ.
+ *
+ * @author clunven
+ */
 public class JeroMQComponentTest extends CamelTestSupport {
+	
+	/** target URL . */
+	private static final String URL_TEST = "tcp://127.0.0.1:2206";
+	
+	/**
+	 * Sample communication test.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+    public void testJeroMQComponent() throws Exception {
 
-    @Test
-    public void testHelloWorld() throws Exception {
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMinimumMessageCount(1);
+		MockEndpoint mock = getMockEndpoint("mock:end");
+		
+		// Envoi du message
+		template.sendBody("direct:start","{ \"id\":\"1\"}");
+		
+        // Asserts
+		mock.expectedMinimumMessageCount(1);
         assertMockEndpointsSatisfied();
     }
 
+    /** {@inheritDoc} */
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
-       
     	return new RouteBuilder() {
             public void configure() {
-                from("jeromq://tcp://127.0.0.1:2200?socketType=PULL&linger=0").to("mock:result");
+            	
+                // Send message to 0MQ
+            	from("direct:start").to("jeromq://" +URL_TEST + "?socketType=PUSH&linger=0").end();
+                
+            	// Read message from 0MQ and send to mock
+                from("jeromq://" +URL_TEST + "?socketType=PULL&linger=0").to("mock:end");
             }
         };
     }

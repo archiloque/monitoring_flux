@@ -21,6 +21,7 @@ import org.apache.camel.Processor;
 import org.apache.camel.Producer;
 import org.apache.camel.impl.DefaultEndpoint;
 import org.zeromq.ZContext;
+import org.zeromq.ZMQ;
 
 /**
  * EndPoint representing a ZERO MQ Endpoint through JeroMQ.
@@ -34,6 +35,9 @@ public class JeroMQEndpoint extends DefaultEndpoint {
 	
 	/** Socket ZeroMQ. */
 	private ZContext jeromqContext;
+	
+	 /** Reading socket. */
+    private ZMQ.Socket zContextSocket;
 	
 	/** Availables are PUSH, PULL, SUBSCRIBE. */
 	private String socketType = String.valueOf(SOCKETS.PULL);
@@ -173,5 +177,24 @@ public class JeroMQEndpoint extends DefaultEndpoint {
 	 */
 	public void setLabel(String label) {
 		this.label = label;
+	}
+
+	/**
+	 * Getter accessor for attribute 'zContextSocket'.
+	 *
+	 * @return
+	 *       current value of 'zContextSocket'
+	 */
+	public ZMQ.Socket getzContextSocket() {
+		return zContextSocket;
+	}
+
+	/**
+	 * Setter accessor for attribute 'zContextSocket'.
+	 * @param zContextSocket
+	 * 		new value for 'zContextSocket '
+	 */
+	public void setzContextSocket(ZMQ.Socket zContextSocket) {
+		this.zContextSocket = zContextSocket;
 	}
 }

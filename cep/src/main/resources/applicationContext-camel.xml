@@ -20,21 +20,48 @@
 		<route id="audit.frontend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:2200?socketType=PULL&amp;linger=0&amp;label=frontend" />
 			<to uri="msg.processor" />
-			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
+			<multicast stopOnException="true">
+				<to uri="esper://monitoring" />
+				<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
+			</multicast>
 		</route>
 		
 		<route id="middleend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:2201?socketType=PULL&amp;linger=0&amp;label=middleend" />
 			<to uri="msg.processor" />
-			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
-		</route>	
+			<multicast stopOnException="true">
+				<to uri="esper://monitoring" />
+				<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
+			</multicast>
+		</route>
 		
 		<route id="backend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:2202?socketType=PULL&amp;linger=0&amp;label=backend" />
 			<to uri="msg.processor" />
-			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
+			<multicast stopOnException="true">
+				<to uri="esper://monitoring" />
+				<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=cep_to_elasticsearch"/>
+			</multicast>
 		</route>
-
+		
+		<!-- Processing CEP and COUNT -->
+		<route id="cep.count_per_second" trace="false">
+			<from uri="esper://monitoring?eql=insert into TicksPerSecond
+						select correlationId, count(*) as cnt 
+						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec) 
+						group by correlationId" />
+			<to uri="esper://monitoring" />
+		</route>
+		
+		<!-- Detect violation and push to ES -->
+		<route id="cep.violation" trace="false">
+			<from uri="esper://monitoring?eql=
+						select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt 
+						from TicksPerSecond.win:time(10 sec) 
+						group by correlationId" />
+			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=violation " />
+		</route>
+            			
 	</camelContext>
 	
 </beans>

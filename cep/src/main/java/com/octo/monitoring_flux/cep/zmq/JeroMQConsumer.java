@@ -29,7 +29,7 @@ import org.zeromq.ZMQ;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringMessage;
+import com.octo.monitoring_flux.shared.MonitoringEvent;
 
 /**
  * READ messages coming from ZeroMQ.
@@ -46,9 +46,6 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
 
 	/** Target JeroMQ Component. */
     private final JeroMQEndpoint endpoint;
-    
-    /** Reading socket. */
-    private ZMQ.Socket zContextSocket;
 
     /**
      * Initialization through endpoint.
@@ -64,18 +61,18 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
        
         // Read endpoint information and create a poller
         if ("PULL".equalsIgnoreCase(endpoint.getSocketType())) {
-        	zContextSocket = endpoint.getJeromqContext().createSocket(ZMQ.PULL);
+        	endpoint.setzContextSocket(endpoint.getJeromqContext().createSocket(ZMQ.PULL));
         } else if ("SUBSCRIBE".equalsIgnoreCase(endpoint.getSocketType())) {
-        	zContextSocket = endpoint.getJeromqContext().createSocket(ZMQ.SUB);
+        	endpoint.setzContextSocket(endpoint.getJeromqContext().createSocket(ZMQ.SUB));
         } else {
         	throw new IllegalArgumentException("Cannot create a poller correct value are PULL and SUBSCRIBE for socketType");
         }
         
         // Linger
-        zContextSocket.setLinger(endpoint.getLinger());
+        endpoint.getzContextSocket().setLinger(endpoint.getLinger());
         
         // URL
-	    zContextSocket.connect(endpoint.getUrl());
+        endpoint.getzContextSocket().connect(endpoint.getUrl());
 	    // if no label defined, set default
 	    if (endpoint.getLabel() == null) endpoint.setLabel(endpoint.getUrl());
 	    logger.info("ZeroMQ connection ETABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
@@ -84,7 +81,7 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
     /** {@inheritDoc} */
     @Override
     protected int poll() throws Exception {
-    	String msg = new String(zContextSocket.recv(0));
+    	String msg = new String(endpoint.getzContextSocket().recv(0));
     	logger.info("Incoming message from <" + endpoint.getLabel() + ">");
     	
     	// Create empty exchange
@@ -97,7 +94,7 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
     	
     	// Set Marshalled Message as OUT
     	Message dataOut = new DefaultMessage();
-    	dataOut.setBody( new MonitoringMessage(jacksonReader.readValue(msg)));
+    	dataOut.setBody( new MonitoringEvent(jacksonReader.readValue(msg)));
     	exchange.setOut(dataOut);
     	
         try {

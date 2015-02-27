@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author <a href="mailto:cedrick.lunven@gmail.com">Cedrick LUNVEN</a>
  */
-public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
+public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 	
 	/** Serial. */
 	private static final long serialVersionUID = -5450039726854700100L;
@@ -78,7 +78,7 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	/**
 	 * Default Constructor.
 	 */
-	public MonitoringMessage() {
+	public MonitoringEvent() {
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class MonitoringMessage implements Serializable, MonitoringMessagesKeys {
 	 * @param message
 	 */
 	@SuppressWarnings("unchecked")
-	public MonitoringMessage(Map<String, Object> msg) {
+	public MonitoringEvent(Map<String, Object> msg) {
 		if (msg == null) return;
 		correlationId 	= (msg.containsKey(MONITORING_MESSAGE_CORRELATION_ID)) ? (String) msg.get(MONITORING_MESSAGE_CORRELATION_ID) : null;
 		endPoint 		= (msg.containsKey(MONITORING_MESSAGE_ENDPOINT)) ? (String) msg.get(MONITORING_MESSAGE_ENDPOINT) : null;

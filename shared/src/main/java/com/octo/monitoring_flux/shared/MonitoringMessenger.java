@@ -35,7 +35,7 @@ public class MonitoringMessenger {
      * @param mm
      * 		target message to be sent
      */
-    public void sendMonitoringMessage(MonitoringMessage mm) {
+    public void sendMonitoringMessage(MonitoringEvent mm) {
         monitoringMessageQueue.add(mm.asMessage());
     }
 
