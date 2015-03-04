@@ -16,6 +16,14 @@
         <!-- app properties -->
         <redis.port>6379</redis.port>
         <redis.key>app_queue</redis.key>
+
+        <elasticsearch.cluster.name>my-cluster</elasticsearch.cluster.name>
+        <elasticsearch.index.name>monitoring</elasticsearch.index.name>
+        <elasticsearch.index>monitoring</elasticsearch.index>
+
+        <zeromq.frontend.port>2200</zeromq.frontend.port>
+        <zeromq.middleend.port>2201</zeromq.middleend.port>
+        <zeromq.backend.port>2202</zeromq.backend.port>
     </properties>
 
     <prerequisites>

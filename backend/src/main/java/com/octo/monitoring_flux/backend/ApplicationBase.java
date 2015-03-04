@@ -1,5 +1,14 @@
 package com.octo.monitoring_flux.backend;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
+import com.octo.monitoring_flux.shared.MonitoringMessenger;
+import com.octo.monitoring_flux.shared.MonitoringUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import redis.clients.jedis.Jedis;
+
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.Date;
@@ -10,55 +19,49 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import redis.clients.jedis.Jedis;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
-import com.octo.monitoring_flux.shared.MonitoringMessenger;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
-
 /**
  * Base structure to write a backend application to process messages.
  */
 public abstract class ApplicationBase {
 
-	/** Logger for this class. */
+    /**
+     * Logger for this class.
+     */
 	private static final Logger LOGGER = LoggerFactory.getLogger(Backend.class);
 
-	/** Monitoring features. */
+    /**
+     * Monitoring features.
+     */
     private MonitoringMessenger monitoringMessenger;
-    
-    /** Jaclson Mapper. */
+
+    /**
+     * Jackson Mapper.
+     */
     private final ObjectReader mapReader = new ObjectMapper().reader(Map.class);
 
-    /** Value of the redis key to read from. */
+    /**
+     * Value of the redis key to read from.
+     */
     private String redisKey;
 
-    /** Thread pool in charge of processing the message. */
+    /**
+     * Thread pool in charge of processing the message.
+     */
     private final ExecutorService executorService = Executors.newFixedThreadPool(10);
-    
-    /** Configuration informations. */
+
+    /**
+     * Configuration information.
+     */
     private Properties applicationProperties = new Properties();
-    
-    /** Connection redis. */
+
+    /**
+     * Connection redis.
+     */
     private Jedis redisConnection;
     
-    /**
-     * Default Constructor
-     */
     protected ApplicationBase() {
-    	
-    	// Load backend.properties file
     	loadConfiguration();
-
-    	// Init connection and listener to redis through dedidacted KEY
     	initRedisConnection();
-    	
-    	// Init connection to zeroMQ
     	initZeroMQConnection();
 
     	// Start
@@ -98,7 +101,7 @@ public abstract class ApplicationBase {
     		LOGGER.debug("Try to ping Redis : " + redisConnection.ping());
 	        LOGGER.info("Redis connection ETABLISHED");
     	} catch(RuntimeException re) {
-    		LOGGER.error("Cannot connect to REDISn check it's started and available on "+ redisHost + ":" + redisPort, re);
+    		LOGGER.error("Cannot connect to REDIS check it's started and available on "+ redisHost + ":" + redisPort, re);
     		System.exit(-1);
     	}
     }
@@ -124,7 +127,6 @@ public abstract class ApplicationBase {
      *
      * @param message the raw message content.
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
 	private void processMessage(String message) {
         LOGGER.info(message);
         Date receivedMessageTimestamp = MonitoringUtilities.getCurrentTimestamp();

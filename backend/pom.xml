@@ -16,7 +16,6 @@
 
     <properties>
         <app.name>monitoring-flux-backend</app.name>
-        <zeromq.port>2202</zeromq.port>
     </properties>
 
     <dependencies>
