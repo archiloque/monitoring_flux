@@ -23,7 +23,6 @@ import java.util.Map;
 
 /**
  * Represents the component that manages {@link JeroMQEndpoint}
- *
  */
 public class JeroMQComponent extends DefaultComponent {
     

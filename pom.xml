@@ -24,6 +24,10 @@
         <zeromq.frontend.port>2200</zeromq.frontend.port>
         <zeromq.middleend.port>2201</zeromq.middleend.port>
         <zeromq.backend.port>2202</zeromq.backend.port>
+
+        <!-- dependencies versions -->
+        <slf4j.version>1.7.10</slf4j.version>
+        <logback.version>1.1.2</logback.version>
     </properties>
 
     <prerequisites>
@@ -44,7 +48,14 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.10</version>
+            <version>${slf4j.version}</version>
+        </dependency>
+
+        <!-- Log -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
         </dependency>
 
         <dependency>
