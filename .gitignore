@@ -7,3 +7,4 @@ shared/target
 .settings
 .DS_Store
 *.iml
+cep/data
