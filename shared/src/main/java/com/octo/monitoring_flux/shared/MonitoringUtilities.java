@@ -28,16 +28,28 @@ public interface MonitoringUtilities {
     static final String localhost = getLocalhost();
 
     /**
-     * Get the current timestamp in a rfc-399 format.
+     * Get the current timestamp.
      */
     public static Date getCurrentTimestamp() {
         return new Date();
     }
 
+    /**
+     * Format a date in rfc-399 format.
+     * @param date the non-null date.
+     * @return the formatted date.
+     */
     public static String formatDateAsRfc339(Date date) {
         synchronized (MonitoringUtilities.class) {
             return rfc339.format(date);
         }
+    }
+
+    /**
+     * Get the current timestamp in a rfc-399 format.
+     */
+    public static String getCurrentTimestampAsRfc339(){
+        return formatDateAsRfc339(getCurrentTimestamp());
     }
 
     /**

@@ -19,6 +19,10 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.formatDateAsRfc339;
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.getCurrentTimestamp;
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.getCurrentTimestampAsRfc339;
+
 /**
  * Base structure to write a backend application to process messages.
  */
@@ -129,8 +133,8 @@ public abstract class ApplicationBase {
      */
 	private void processMessage(String message) {
         LOGGER.info(message);
-        Date receivedMessageTimestamp = MonitoringUtilities.getCurrentTimestamp();
-        String receivedMessageTimestampAsString = MonitoringUtilities.formatDateAsRfc339(receivedMessageTimestamp);
+        Date receivedMessageTimestamp = getCurrentTimestamp();
+        String receivedMessageTimestampAsString = formatDateAsRfc339(receivedMessageTimestamp);
         Map<String, Object> parsedMessage;
         try {
             parsedMessage = mapReader.readValue(message);
@@ -161,7 +165,7 @@ public abstract class ApplicationBase {
         // Java8 yeah...
         executorService.submit(() -> {
             LOGGER.info("Begin processing");
-            String beginProcessingTimestampAsString = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
+            String beginProcessingTimestampAsString = getCurrentTimestampAsRfc339();
             Map<String, Object> moreInfo = new HashMap<>();
             moreInfo.put("begin_processing_timestamp", beginProcessingTimestampAsString);
             monitoringMessenger.sendMonitoringMessage(
@@ -191,8 +195,8 @@ public abstract class ApplicationBase {
             }
 
             LOGGER.info("End processing");
-            Date endProcessingTimestamp = MonitoringUtilities.getCurrentTimestamp();
-            String endProcessingTimestampAsString = MonitoringUtilities.formatDateAsRfc339(endProcessingTimestamp);
+            Date endProcessingTimestamp = getCurrentTimestamp();
+            String endProcessingTimestampAsString = formatDateAsRfc339(endProcessingTimestamp);
 
             monitoringMessenger.sendMonitoringMessage(
                     correlationId,
