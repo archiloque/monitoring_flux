@@ -1,5 +1,39 @@
 Nothing to see here for the moment, see you later :-)
 
+== Requirements
+
+To run all the elements you will need:
+
+- Java 8
+- link:http://maven.apache.org[Maven]
+- link:https://www.ruby-lang.org[Ruby] or link:http://jruby.org[JRuby]
+- link:http://bundler.io[Bundler]
+- link:http://zeromq.org[ZeroMQ]
+- link:http://redis.io[Redis]
+- link:http://www.elasticsearch.org[Elasticsearch]
+
+== Installation
+
+After all the required elements are installed:
+
+- Run `mvn install` in the root directory to build all the Java components
+- Run `bundle install` in the frontend directory to install all the frontend's dependencies
+- If needed, create the `monitoring` index in Elasticsearch `curl -XPUT 'http://localhost:9200/monitoring/'`
+
+== Starting the applications
+
+First start the external components:
+
+- Redis
+- Elasticsearch
+
+Check each application contains the information to start it:
+
+- link:frontend[the frontend]
+- link:middleend[the middle end]
+- link:backend[the backend]
+- link:cep[the cep]
+
 == Monitoring message format
 
 [source,javascript]

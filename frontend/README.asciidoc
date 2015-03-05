@@ -5,7 +5,7 @@ This simple frontend applications displays a web interface and call REST service
 This app is written in Ruby using link:http://www.sinatrarb.com[the Sinatra framework].
 The frontend use link:http://jquery.com[jQuery] and link:http://getbootstrap.com[Bootstrap].
 
-The application should be compatible with Ruby MRI and JRuby.
+The application should be compatible with link:https://www.ruby-lang.org[Ruby] and link:http://jruby.org[JRuby].
 
 The application connects to:
 
@@ -32,7 +32,7 @@ Configuration is done through environment variables:
 
 === Structure
 
-- `lib/app_base.rb`: base for a frontend Sinatra application with redis messages
+- `lib/app_base.rb`: base for a frontend Sinatra application with Redis messages
 - `lib/monitoring_base.rb`: adds monitoring-related features
 - `lib/frontend_app.rb`: the business code
 - `static/index.html`: the frontend page
