@@ -5,6 +5,7 @@ This applications read audit messages from ZeroMQ and push them to elastic searc
 This app is written in Java 8 and relies on link:http://maven.apache.org[Maven] and link:http://camel.apache.org/[Apache Camel]
 
 The application connects to:
+
 - link:http://zeromq.org[ZeroMQ] to receive monitoring messages on ports `2200`,`2201`,`2202`
 - link:http://www.elasticsearch.org[Elasticsearch] to push all the messages
 
