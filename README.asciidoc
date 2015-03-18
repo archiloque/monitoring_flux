@@ -37,7 +37,7 @@ Check each application contains the information to start it:
 
 == Setup the index in ElasticSearch
 
-Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fileds are analysed the right way:
+Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analysed the right way:
 
 [source,bash]
 ----
