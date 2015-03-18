@@ -99,7 +99,7 @@ If you want to watch the system running from some time you can schedule services
 
 [bash]
 ----
-while sleep 5; do curl -H "Content-Type: application/json" -d '{"numberOfMessages":10,"timeToSpend":1}' "http://localhost:9292/messages"; done
+while sleep 5; do curl -X POST --data 'numberOfMessages=10&timeToSpend=1' 'http://localhost:9292/messages' ; done
 ----
 
 == License
