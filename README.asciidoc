@@ -16,6 +16,7 @@ To run all the elements you will need:
 
 After all the required elements are installed:
 
+- setup the index in ElasticSearch (see bellow)
 - Run `mvn install` in the root directory to build all the Java components
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
 - If needed, create the `monitoring` index in Elasticsearch `curl -XPUT 'http://localhost:9200/monitoring/'`
@@ -33,6 +34,33 @@ Check each application contains the information to start it:
 - link:middleend[the middle end]
 - link:backend[the backend]
 - link:cep[the cep]
+
+== Setup the index in ElasticSearch
+
+Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fileds are analysed the right way:
+
+[source,bash]
+----
+curl -XPOST 'http://localhost:9200/monitoring' -d '{
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "zeromq_to_elasticsearch" : {
+            "properties" : {
+                "correlation_id" : { "type" : "string", "index" : "not_analyzed" },
+                "module_type" : { "type" : "string", "index" : "not_analyzed" },
+                "module_id" : { "type" : "string", "index" : "not_analyzed" },
+
+                "begin_timestamp":{"type":"date","format":"dateOptionalTime"},
+                "end_timestamp":{"type":"date","format":"dateOptionalTime"},
+                "timestamp":{"type":"date","format":"dateOptionalTime"},
+                "elapsed_time":{"type":"double"}
+            }
+        }
+    }
+}'
+----
 
 == Monitoring message format
 
