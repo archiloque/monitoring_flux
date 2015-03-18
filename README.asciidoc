@@ -93,6 +93,15 @@ curl -XPOST 'http://localhost:9200/monitoring' -d '{
 }
 ----
 
+== Call service from the command line
+
+If you want to watch the system running from some time you can schedule services call from the command line:
+
+[bash]
+----
+while sleep 5; do curl -H "Content-Type: application/json" -d '{"numberOfMessages":10,"timeToSpend":1}' "http://localhost:9292/messages"; done
+----
+
 == License
 
 Code (C) 2015 released under the MIT license.
