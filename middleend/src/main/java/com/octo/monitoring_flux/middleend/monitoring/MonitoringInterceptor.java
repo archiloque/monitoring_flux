@@ -1,7 +1,6 @@
 package com.octo.monitoring_flux.middleend.monitoring;
 
 import com.octo.monitoring_flux.shared.MonitoringMessenger;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,6 +11,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.formatDateAsRfc339;
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.getCurrentTimestamp;
 
 /**
  * Interceptor adding monitoring capabilities.
@@ -55,8 +57,8 @@ public class MonitoringInterceptor extends HandlerInterceptorAdapter {
             MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
             RecordingServletResponse recordingServletResponse = (RecordingServletResponse) response;
 
-            Date finalTimestamp = MonitoringUtilities.getCurrentTimestamp();
-            String finalTimestampAsString = MonitoringUtilities.formatDateAsRfc339(finalTimestamp);
+            Date finalTimestamp = getCurrentTimestamp();
+            String finalTimestampAsString = formatDateAsRfc339(finalTimestamp);
 
             Map<String, Object> responseForMonitoring = new HashMap<>();
             responseForMonitoring.put("code", response.getStatus());

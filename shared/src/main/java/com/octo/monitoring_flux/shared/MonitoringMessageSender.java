@@ -1,17 +1,16 @@
 package com.octo.monitoring_flux.shared;
 
-import java.io.IOException;
-import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeromq.ZContext;
 import org.zeromq.ZMQ;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 /**
  * Thread that send messages from a BlockingQueue to ZeroMQ.
@@ -28,11 +27,11 @@ public final class MonitoringMessageSender extends Thread {
     /**
      * Initialize the message sender.
      *
-     * @param zMQport the non-null port number to be used by Zero MQ
+     * @param zMQPort the non-null port number to be used by Zero MQ
      */
-    public static void initialize(int zMQport) {
+    public static void initialize(int zMQPort) {
         if (INSTANCE == null) {
-            INSTANCE = new MonitoringMessageSender(zMQport);
+            INSTANCE = new MonitoringMessageSender(zMQPort);
             INSTANCE.start();
         }
     }
@@ -42,7 +41,7 @@ public final class MonitoringMessageSender extends Thread {
      */
     private final BlockingQueue<Map<String, ?>> queue = new LinkedTransferQueue<>();
 
-    /** Set as attribute to remove memeory leak. */
+    /** Set as attribute to remove memory leak. */
   	private ZContext zContext;
   	
     /**

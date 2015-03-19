@@ -15,9 +15,14 @@
     <name>monitoring-flux-middleend</name>
     
     <properties>
+        <!-- general properties -->
         <app.name>monitoring-flux-middleend</app.name>
-        <zeromq.port>2201</zeromq.port>
         <server.port>8086</server.port>
+
+        <!-- dependencies versions -->
+        <springboot.version>1.1.10.RELEASE</springboot.version>
+        <commons-io.version>2.4</commons-io.version>
+
     </properties>
 
     <dependencies>
@@ -25,13 +30,13 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>1.1.10.RELEASE</version>
+            <version>${springboot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <version>1.1.10.RELEASE</version>
+            <version>${springboot.version}</version>
         </dependency>
 
         <dependency>
@@ -42,7 +47,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>${commons-io.version}</version>
         </dependency>
 
     </dependencies>

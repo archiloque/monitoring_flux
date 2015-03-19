@@ -1,5 +1,67 @@
 Nothing to see here for the moment, see you later :-)
 
+== Requirements
+
+To run all the elements you will need:
+
+- Java 8
+- link:http://maven.apache.org[Maven]
+- link:https://www.ruby-lang.org[Ruby] or link:http://jruby.org[JRuby]
+- link:http://bundler.io[Bundler]
+- link:http://zeromq.org[ZeroMQ]
+- link:http://redis.io[Redis]
+- link:http://www.elasticsearch.org[Elasticsearch]
+
+== Installation
+
+After all the required elements are installed:
+
+- setup the index in ElasticSearch (see bellow)
+- Run `mvn install` in the root directory to build all the Java components
+- Run `bundle install` in the frontend directory to install all the frontend's dependencies
+- If needed, create the `monitoring` index in Elasticsearch `curl -XPUT 'http://localhost:9200/monitoring/'`
+
+== Starting the applications
+
+First start the external components:
+
+- Redis
+- Elasticsearch
+
+Check each application contains the information to start it:
+
+- link:frontend[the frontend]
+- link:middleend[the middle end]
+- link:backend[the backend]
+- link:cep[the cep]
+
+== Setup the index in ElasticSearch
+
+Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analysed the right way:
+
+[source,bash]
+----
+curl -XPOST 'http://localhost:9200/monitoring' -d '{
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+        "zeromq_to_elasticsearch" : {
+            "properties" : {
+                "correlation_id" : { "type" : "string", "index" : "not_analyzed" },
+                "module_type" : { "type" : "string", "index" : "not_analyzed" },
+                "module_id" : { "type" : "string", "index" : "not_analyzed" },
+
+                "begin_timestamp":{"type":"date","format":"dateOptionalTime"},
+                "end_timestamp":{"type":"date","format":"dateOptionalTime"},
+                "timestamp":{"type":"date","format":"dateOptionalTime"},
+                "elapsed_time":{"type":"double"}
+            }
+        }
+    }
+}'
+----
+
 == Monitoring message format
 
 [source,javascript]
@@ -30,3 +92,16 @@ Nothing to see here for the moment, see you later :-)
     }
 }
 ----
+
+== Call service from the command line
+
+If you want to watch the system running from some time you can schedule services call from the command line:
+
+[bash]
+----
+while sleep 5; do curl -X POST --data 'numberOfMessages=10&timeToSpend=1' 'http://localhost:9292/messages' ; done
+----
+
+== License
+
+Code (C) 2015 released under the MIT license.

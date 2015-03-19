@@ -11,17 +11,15 @@ The application connects to:
 
 The configuration can be changed in the application's `pom.xml` and in it's parent `pom.xml`.
 
-== Build
+== Installation
 
-- simply build all maven module by running `mvn install` on the project's root
+- Build all maven modules by running `mvn install` on the project's root
 
 == Start the app
 
-- Redis must be up and running to start the application
+- Redis must be up and running
 - You must have installed "monitoring-flux-shared" once in your local repository
-- in the application's directory run `mvn spring-boot:run`
-- The application should now be listening incoming request from on 8066 port
-
+- In the application's directory run `mvn spring-boot:run`
 
 == License
 

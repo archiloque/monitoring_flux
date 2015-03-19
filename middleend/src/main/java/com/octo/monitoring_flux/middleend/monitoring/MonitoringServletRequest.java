@@ -2,7 +2,6 @@ package com.octo.monitoring_flux.middleend.monitoring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -17,6 +16,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.createCorrelationId;
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.formatDateAsRfc339;
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.getCurrentTimestamp;
 
 /**
  * An HttpServletRequestWrapper that record the request content and provide some helpers.
@@ -57,12 +60,12 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
     /**
      * Timestamp when message has been received.
      */
-    private final Date initialTimestamp = MonitoringUtilities.getCurrentTimestamp();
+    private final Date initialTimestamp = getCurrentTimestamp();
 
     /**
      * Timestamp when message has been received.
      */
-    private final String initialTimestampAsString = MonitoringUtilities.formatDateAsRfc339(initialTimestamp);
+    private final String initialTimestampAsString = formatDateAsRfc339(initialTimestamp);
 
     public MonitoringServletRequest(HttpServletRequest request) {
         super(request);
@@ -72,7 +75,7 @@ public class MonitoringServletRequest extends HttpServletRequestWrapper {
 
         correlationIdCandidate = httpServletRequest.getHeader("X-Correlation-id");
         if (correlationIdCandidate == null) {
-            correlationIdCandidate = MonitoringUtilities.createCorrelationId();
+            correlationIdCandidate = createCorrelationId();
         }
         correlationId = correlationIdCandidate;
 

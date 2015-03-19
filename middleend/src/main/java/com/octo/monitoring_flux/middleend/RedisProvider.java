@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.octo.monitoring_flux.middleend.monitoring.MonitoringServletRequest;
 import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
 import com.octo.monitoring_flux.shared.MonitoringMessenger;
-import com.octo.monitoring_flux.shared.MonitoringUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,8 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.octo.monitoring_flux.shared.MonitoringUtilities.getCurrentTimestampAsRfc339;
 
 /**
  * Redis-related functions.
@@ -50,7 +51,7 @@ public class RedisProvider {
     public void postMessageToBackend(HttpServletRequest request, String key, Object messageBody) {
         MonitoringServletRequest monitoringServletRequest = (MonitoringServletRequest) request;
 
-        String timestamp = MonitoringUtilities.formatDateAsRfc339(MonitoringUtilities.getCurrentTimestamp());
+        String timestamp = getCurrentTimestampAsRfc339();
 
         Map<String, String> header = new HashMap<>();
         header.put(MonitoringMessagesKeys.MONITORING_MESSAGE_CORRELATION_ID, monitoringServletRequest.getCorrelationId());
