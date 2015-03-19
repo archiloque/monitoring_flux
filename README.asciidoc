@@ -39,7 +39,7 @@ Check each application contains the information to start it:
 
 == Setup the index in ElasticSearch
 
-[[elasticsearch-index]]Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analyzed the right way:
+[[elasticsearch-index]]Even if Elasticsearch can auto-create indexes, it's best to setup it manually so fields are analyzed the right way:
 
 [source,bash]
 ----
