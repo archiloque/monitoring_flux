@@ -35,7 +35,18 @@ import com.octo.monitoring_flux.shared.MonitoringEvent;
 public class EsperComponentTest extends CamelTestSupport {
 	
 	/** Sample Messages. */
-	private String FRONTEND_BEGIN = "{\"begin_timestamp\":\"2015-02-27T16:45:58.489+01:00\",\"endpoint\":\"POST /messages\",\"module_id\":\"MonitoringBase_octo-clu_36861\",\"module_type\":\"MonitoringBase\",\"correlation_id\":\"MonitoringBase_octo-clu_36861_2015-02-27 15:45:58 UTC_8892ee31-59fe-4597-a8dd-f9cecd2d2742\",\"message_type\":\"Begin call\",\"params\":{\"numberOfMessages\":\"1\",\"timeToSpend\":\"1\"},\"env\":{\"CONTENT_LENGTH\":\"32\",\"CONTENT_TYPE\":\"application/x-www-form-urlencoded; charset=UTF-8\",\"GATEWAY_INTERFACE\":\"CGI/1.1\",\"PATH_INFO\":\"/messages\",\"QUERY_STRING\":\"\",\"REMOTE_ADDR\":\"::1\",\"REMOTE_HOST\":\"localhost\",\"REQUEST_METHOD\":\"POST\",\"REQUEST_URI\":\"http://localhost:9292/messages\",\"SCRIPT_NAME\":\"\",\"SERVER_NAME\":\"localhost\",\"SERVER_PORT\":\"9292\",\"SERVER_PROTOCOL\":\"HTTP/1.1\",\"SERVER_SOFTWARE\":\"WEBrick/1.3.1 (Ruby/2.0.0/2014-05-08)\",\"HTTP_HOST\":\"localhost:9292\",\"HTTP_CONNECTION\":\"keep-alive\",\"HTTP_ACCEPT\":\"*/*\",\"HTTP_ORIGIN\":\"http://localhost:9292\",\"HTTP_X_REQUESTED_WITH\":\"XMLHttpRequest\",\"HTTP_USER_AGENT\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36\",\"HTTP_REFERER\":\"http://localhost:9292/index.html\",\"HTTP_ACCEPT_ENCODING\":\"gzip, deflate\",\"HTTP_ACCEPT_LANGUAGE\":\"fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4\",\"HTTP_VERSION\":\"HTTP/1.1\",\"REQUEST_PATH\":\"/messages\"},\"timestamp\":\"2015-02-27T16:45:58.489+01:00\"}";
+	private String FRONTEND_BEGIN = "{\"begin_timestamp\":\"2015-02-27T16:45:58.489+01:00\",\"endpoint\":\"POST /messages\","
+			+ "\"module_id\":\"MonitoringBase_octo-clu_36861\",\"module_type\":\"MonitoringBase\",\"correlation_id\":"
+			+ "\"MonitoringBase_octo-clu_36861_2015-02-27 15:45:58 UTC_8892ee31-59fe-4597-a8dd-f9cecd2d2742\",\"message_type\":\"Begin call\","
+			+ "\"params\":{\"numberOfMessages\":\"1\",\"timeToSpend\":\"1\"},\"env\":"
+			+ "{\"CONTENT_LENGTH\":\"32\",\"CONTENT_TYPE\":\"application/x-www-form-urlencoded; charset=UTF-8\",\"GATEWAY_INTERFACE\":\"CGI/1.1\","
+			+ "\"PATH_INFO\":\"/messages\",\"QUERY_STRING\":\"\",\"REMOTE_ADDR\":\"::1\",\"REMOTE_HOST\":\"localhost\",\"REQUEST_METHOD\":\"POST\","
+			+ "\"REQUEST_URI\":\"http://localhost:9292/messages\",\"SCRIPT_NAME\":\"\",\"SERVER_NAME\":\"localhost\",\"SERVER_PORT\":\"9292\","
+			+ "\"SERVER_PROTOCOL\":\"HTTP/1.1\",\"SERVER_SOFTWARE\":\"WEBrick/1.3.1 (Ruby/2.0.0/2014-05-08)\",\"HTTP_HOST\":\"localhost:9292\","
+			+ "\"HTTP_CONNECTION\":\"keep-alive\",\"HTTP_ACCEPT\":\"*/*\",\"HTTP_ORIGIN\":\"http://localhost:9292\",\"HTTP_X_REQUESTED_WITH\":"
+			+ "\"XMLHttpRequest\",\"HTTP_USER_AGENT\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/40.0.2214.115 Safari/537.36\","
+			+ "\"HTTP_REFERER\":\"http://localhost:9292/index.html\",\"HTTP_ACCEPT_ENCODING\":\"gzip, deflate\",\"HTTP_ACCEPT_LANGUAGE\":\"fr-FR,fr;q=0.8,en-US;q=0.6,en;q=0.4\","
+			+ "\"HTTP_VERSION\":\"HTTP/1.1\",\"REQUEST_PATH\":\"/messages\"},\"timestamp\":\"2015-02-27T16:45:58.489+01:00\"}";
 	
 	/** Sample Messages. */
 	private String FRONTEND_STARTCALL = "{\"headers\":"
@@ -89,22 +100,29 @@ public class EsperComponentTest extends CamelTestSupport {
 	 * @throws Exception
 	 */
 	@Test
-    public void testJeroMQComponent() throws Exception {
+    public void testCEP() throws Exception {
 		// read sample as event
 		ObjectReader jacksonReader = new ObjectMapper().reader(Map.class);
 		MonitoringEvent frontBegin     = new MonitoringEvent(jacksonReader.readValue(FRONTEND_BEGIN));
 		MonitoringEvent frontStartCall = new MonitoringEvent(jacksonReader.readValue(FRONTEND_STARTCALL));
 		MonitoringEvent frontEndCall   = new MonitoringEvent(jacksonReader.readValue(FRONTEND_ENDCALL));
 		
-		MockEndpoint mock = getMockEndpoint("mock:end");
+		MockEndpoint mockSLA = getMockEndpoint("mock:sla");
+		MockEndpoint mockAvg = getMockEndpoint("mock:avg");
 		
-		// Envoi du message
 		template.sendBody("direct:start", frontBegin);
-		template.sendBody("direct:start", frontStartCall);
-		template.sendBody("direct:start", frontEndCall);
+		for(int i=0; i< 10;i++) {
+			template.sendBody("direct:start", frontStartCall);
+			Thread.sleep(i * 100);
+			// Correct the elasped time
+			frontEndCall.setElapsedTime(new Double(i)/10);
+			// Slowing down
+			template.sendBody("direct:start", frontEndCall);
+		}
 		
 		// Asserts
-		mock.expectedMinimumMessageCount(0);
+		mockSLA.expectedMinimumMessageCount(9);
+		mockAvg.expectedMinimumMessageCount(8);
         assertMockEndpointsSatisfied();
     }
 
@@ -117,17 +135,36 @@ public class EsperComponentTest extends CamelTestSupport {
             	// Send message to esper
             	from("direct:start").to("esper://monitoring");
             	
+            	// ------------Message Count (hello world cep) --------------
+            	
             	// Count messages per second
-            	from("esper://monitoring?eql=insert into TicksPerSecond "
+            	from("esper://monitoring?eql="
+            			+ "insert into TicksPerSecond "
             			+ "select correlationId, count(*) as cnt "
             			+ "from " + MonitoringEvent.class.getCanonicalName() + ".win:time_batch(1 sec) "
             			+ "group by correlationId").to("esper://monitoring");
             	
-            	// Display results
-            	from("esper://monitoring?eql=select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt from TicksPerSecond.win:time(10 sec) "
-            			+ "group by correlationId").to("stream:out");
-                
+            	// Display average tick per second for last 10 seconds
+            	from("esper://monitoring?eql="
+            			+ "select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt "
+            			+ "from TicksPerSecond.win:time(10 sec) "
+            			+ "group by correlationId").to("bean:"+DisplayMsgCount.class.getName()).to("mock:avg");
             	
+            	// ------------ Detect SLA Violation ----------------------
+            	
+            	// Record SLA per component
+            	from("esper://monitoring?eql="
+            			+ "insert into SlaCapture "
+            			+ "select moduleType, elapsedTime "
+            			+ "from " + MonitoringEvent.class.getCanonicalName() 
+            			+ ".win:time_batch(1 sec) where elapsedTime is not null") //
+            			.to("esper://monitoring");
+            	
+            	// Detect unitary SLA Violation
+            	from("esper://monitoring?eql="
+            			+ "select moduleType, elapsedTime "
+            			+ "from SlaCapture.win:time_batch(5 sec) "
+            			+ "where elapsedTime > 0.3").to("bean:"+DisplaySlaViolation.class.getName()).to("mock:sla");
             }
         };
     }

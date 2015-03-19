@@ -44,8 +44,10 @@
 			</multicast>
 		</route>
 		
-		<!-- Processing CEP and COUNT -->
-		<route id="cep.count_per_second" trace="false">
+		<!-- CEP -->
+		
+		<!-- compute tick persecond for messages -->
+		<route id="cep.msg.record" trace="false">
 			<from uri="esper://monitoring?eql=insert into TicksPerSecond
 						select correlationId, count(*) as cnt 
 						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec) 
@@ -53,15 +55,35 @@
 			<to uri="esper://monitoring" />
 		</route>
 		
-		<!-- Detect violation and push to ES -->
-		<route id="cep.violation" trace="false">
+		<!-- compute average message for last 10s and store to ES -->
+		<route id="cep.msg.store" trace="false">
 			<from uri="esper://monitoring?eql=
 						select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt 
 						from TicksPerSecond.win:time(10 sec) 
 						group by correlationId" />
+			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=msgcount " />
+		</route>
+		
+		<!-- record elasped time -->
+		<route id="cep.sla.record" trace="false">
+			<from uri="esper://monitoring?eql=
+						insert into SlaCapture
+						select moduleType, elapsedTime 
+						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec) 
+						where elapsedTime is not null" />
+			<to uri="esper://monitoring" />
+		</route>
+		
+		<!-- raise alert every 5s for invalid SLA -->
+		<route id="cep.sla.violation" trace="false">
+			<from uri="esper://monitoring?eql=
+						select moduleType, elapsedTime
+						from SlaCapture.win:time_batch(5 sec) 
+						where elapsedTime > 0.3" />
 			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=monitoring&amp;indexType=violation " />
 		</route>
-            			
+		
+		
 	</camelContext>
 	
 </beans>
