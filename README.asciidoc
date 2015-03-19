@@ -17,11 +17,10 @@ To run all the elements you will need:
 
 After all the required elements are installed:
 
-- setup the index in ElasticSearch (see bellow)
+- Create the index in ElasticSearch (see below)
 - Run `mvn install` in the root directory to build all the Java components
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
-- Create the index in Elasticsearch (see bellow)
-- (Optional) : Import the `kibana-dashboards.json` data in the `.kibana` index in Elasticsearch to get a sample dashboard
+- Optionaly import the `kibana-dashboards.json` data in the `.kibana` index in Elasticsearch to get a sample dashboard
 
 == Starting the applications
 
@@ -40,7 +39,7 @@ Check each application contains the information to start it:
 
 == Setup the index in ElasticSearch
 
-Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analysed the right way:
+Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analyzed the right way:
 
 [source,bash]
 ----
