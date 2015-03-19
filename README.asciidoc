@@ -21,7 +21,7 @@ After all the required elements are installed:
 - Run `mvn install` in the root directory to build all the Java components
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
 - Create the index in Elasticsearch (see bellow)
-- (Optional) : Import the `kibana-dashboards.json` data in the .kibana index in Elasticsearch to get a sample dashboard
+- (Optional) : Import the `kibana-dashboards.json` data in the `.kibana` index in Elasticsearch to get a sample dashboard
 
 == Starting the applications
 
