@@ -17,7 +17,7 @@ To run all the elements you will need:
 
 After all the required elements are installed:
 
-- Create the index in ElasticSearch (see below)
+- Create the index in ElasticSearch (xref:elasticsearch-index[see below])
 - Run `mvn install` in the root directory to build all the Java components
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
 - Optionaly import the `kibana-dashboards.json` data in the `.kibana` index in Elasticsearch to get a sample dashboard
@@ -39,7 +39,7 @@ Check each application contains the information to start it:
 
 == Setup the index in ElasticSearch
 
-Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analyzed the right way:
+[[elasticsearch-index]]Even if ElasticSearch can auto-create indexes, it's best to setup it manually so fields are analyzed the right way:
 
 [source,bash]
 ----
@@ -138,7 +138,7 @@ curl -XPOST 'http://localhost:9200/monitoring' -d '{
 
 If you want to watch the system running from some time you can schedule services call from the command line:
 
-[bash]
+[source,bash]
 ----
 while sleep 5; do curl -X POST --data 'numberOfMessages=10&timeToSpend=1' 'http://localhost:9292/messages' ; done
 ----
