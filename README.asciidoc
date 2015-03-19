@@ -19,7 +19,7 @@ After all the required elements are installed:
 - setup the index in ElasticSearch (see bellow)
 - Run `mvn install` in the root directory to build all the Java components
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
-- If needed, create the `monitoring` index in Elasticsearch `curl -XPUT 'http://localhost:9200/monitoring/'`
+- Create the index in Elasticsearch (see bellow)
 
 == Starting the applications
 
