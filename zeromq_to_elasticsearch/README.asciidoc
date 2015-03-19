@@ -2,7 +2,7 @@
 
 This app is written in Ruby.
 
-It fetch all the messages send to link:http://zeromq.org[ZeroMQ] and put them in link:http://www.elasticsearch.org[Elasticsearch].
+It fetch all the messages send to link:http://zeromq.org[ZeroMQ] and put them in link:https://www.elastic.co[Elasticsearch].
 
 The application should be compatible with Ruby MRI and JRuby.
 
