@@ -29,6 +29,7 @@ First start the external components:
 
 - Redis
 - Elasticsearch
+- Kibana
 
 Check each application contains the information to start it:
 
