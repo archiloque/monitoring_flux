@@ -11,7 +11,7 @@ To run all the elements you will need:
 - link:http://zeromq.org[ZeroMQ]
 - link:http://redis.io[Redis]
 - link:https://www.elastic.co[Elasticsearch]
-- link:https://www.elastic.co/products/kibana[Elasticsearch]
+- link:https://www.elastic.co/products/kibana[Kibana]
 
 == Installation
 
