@@ -14,7 +14,7 @@ The application should be compatible with Ruby MRI and JRuby.
 == Start the app
 
 - Elasticsearch must be up and running to start the application
-- in the application's directory run `ruby zeromq_to_elasticsearch XXXX` where `XXXX` is the port number,
+- in the application's directory run `ruby zeromq_to_elasticsearch.rb XXXX` where `XXXX` is the port number,
 
 - `2200` is the default for the frontend app
 - `2201` is the default for the middle end app.
