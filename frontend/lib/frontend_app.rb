@@ -39,7 +39,7 @@ class FrontendApp < MonitoringBase
               timeToSpend: time_to_spend,
           }
       )
-    rescue e
+    rescue => e
       return [500, "KO: #{e}"]
     end
 
