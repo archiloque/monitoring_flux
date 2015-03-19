@@ -15,7 +15,7 @@ public interface MonitoringUtilities {
     /**
      * A rfc-399 formatter for dates.
      */
-    static final DateFormat rfc339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    static final DateFormat rfc339 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     public static String getLocalhost() {
         try {
