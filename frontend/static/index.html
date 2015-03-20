@@ -48,8 +48,8 @@
                         success: function (data) {
                             alert(data);
                         },
-                        failure: function (errMsg) {
-                            alert(errMsg);
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("" + jqXHR.status + " " + jqXHR.statusText);
                         }
                     });
                 } else {
