@@ -225,7 +225,7 @@ class MonitoringBase < AppBase
               module_id: settings.module_id,
               endpoint: "#{request.env['REQUEST_METHOD']} #{request.env['PATH_INFO']}",
               message_type: message_type,
-              params: params,
+              service_params: params,
               env: env_params
           })
     end

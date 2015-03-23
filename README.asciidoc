@@ -88,7 +88,7 @@ curl -XPOST 'http://localhost:9200/monitoring' -d '{
             "elapsed_time":{
                "type":"double"
             },
-            "params":{
+            "service_params":{
                "type":"object"
             },
             "headers":{
@@ -120,8 +120,8 @@ curl -XPOST 'http://localhost:9200/monitoring' -d '{
     "end_timestamp": "2015-02-19T22:11:15.959+01:00", // optional: timestamp of the end of the current action
     "elapsed_time": 0.020169, // optional: elapsed time of the current action in second
 
-    "params": {
-        // optional: current parameters
+    "service_params": {
+        // optional: service parameters
     },
 
     "headers": {

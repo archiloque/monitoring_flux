@@ -57,9 +57,9 @@ public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 	private Double elapsedTime;
 
     /**
-     * Parameters.
+     * Service parameters.
      */
-	private Map<String, Object> params;
+	private Map<String, Object> serviceParams;
 
     /**
      * Headers.
@@ -90,7 +90,7 @@ public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 		  if (beginTimestamp != null) message.put(MONITORING_MESSAGE_BEGIN_TIMESTAMP, beginTimestamp);
 		  if (endTimestamp != null) message.put(MONITORING_MESSAGE_END_TIMESTAMP, endTimestamp);
           if (elapsedTime != null) message.put(MONITORING_MESSAGE_ELAPSED_TIME, elapsedTime);
-          if (params != null) message.put(MONITORING_MESSAGE_PARAMS, params);
+          if (serviceParams != null) message.put(MONITORING_MESSAGE_SERVICE_PARAMS, serviceParams);
           if (headers != null) message.put(MONITORING_MESSAGE_HEADERS, headers);
           if (result != null) message.put(MONITORING_MESSAGE_RESULT, result);
           return message;
@@ -111,7 +111,7 @@ public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 		beginTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_BEGIN_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_BEGIN_TIMESTAMP) : null;
 		endTimestamp 	= (msg.containsKey(MONITORING_MESSAGE_END_TIMESTAMP)) ? (String) msg.get(MONITORING_MESSAGE_END_TIMESTAMP) : null;
 		elapsedTime 	= (msg.containsKey(MONITORING_MESSAGE_ELAPSED_TIME)) ? (Double) msg.get(MONITORING_MESSAGE_ELAPSED_TIME) : null;
-		params 			= (msg.containsKey(MONITORING_MESSAGE_PARAMS)) ? (Map<String, Object>) msg.get(MONITORING_MESSAGE_PARAMS) : null;
+		serviceParams 	= (msg.containsKey(MONITORING_MESSAGE_SERVICE_PARAMS)) ? (Map<String, Object>) msg.get(MONITORING_MESSAGE_SERVICE_PARAMS) : null;
 		headers 		= (msg.containsKey(MONITORING_MESSAGE_HEADERS)) ? (Map<String, Object>) msg.get(MONITORING_MESSAGE_HEADERS) : null;
 		result 			= (msg.containsKey(MONITORING_MESSAGE_RESULT)) ? msg.get(MONITORING_MESSAGE_RESULT) : null;
 		initialContent  = msg;
@@ -213,12 +213,12 @@ public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 		this.headers = headers;
 	}
 
-	public Map<String, Object> getParams() {
-		return params;
+	public Map<String, Object> getServiceParams() {
+		return serviceParams;
 	}
 
-	public void setParams(Map<String, Object> params) {
-		this.params = params;
+	public void setParams(Map<String, Object> serviceParams) {
+		this.serviceParams = serviceParams;
 	}
 
 }

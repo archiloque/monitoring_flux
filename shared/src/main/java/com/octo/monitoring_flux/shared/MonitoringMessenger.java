@@ -46,13 +46,13 @@ public class MonitoringMessenger {
      * @param endPoint       the endpoint.
      * @param messageType    the message type.
      * @param timestamp      the timestamp.
-     * @param beginTimestamp optional: the timestamp of the beginning of the current action
-     * @param endTimestamp   optional: the timestamp of the end of the current action
-     * @param elapsedTime    optional: the elapsed time of the current action in second
-     * @param params         optional: the current parameters
-     * @param headers        optional: the current headers
-     * @param result         optional: the result of current action
-     * @param initialContent optional: the initial content
+     * @param beginTimestamp optional: the timestamp of the beginning of the current action.
+     * @param endTimestamp   optional: the timestamp of the end of the current action.
+     * @param elapsedTime    optional: the elapsed time of the current action in second.
+     * @param serviceParams  optional: the service parameters.
+     * @param headers        optional: the current headers.
+     * @param result         optional: the result of current action.
+     * @param initialContent optional: the initial content.
      */
     public void sendMonitoringMessage(
             String correlationId,
@@ -62,7 +62,7 @@ public class MonitoringMessenger {
             String beginTimestamp,
             String endTimestamp,
             Double elapsedTime,
-            Object params,
+            Object serviceParams,
             Object headers,
             Object result,
             Map<String, Object> initialContent) {
@@ -77,7 +77,7 @@ public class MonitoringMessenger {
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_BEGIN_TIMESTAMP, beginTimestamp);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_END_TIMESTAMP, endTimestamp);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_ELAPSED_TIME, elapsedTime);
-        addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_PARAMS, params);
+        addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_SERVICE_PARAMS, serviceParams);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_HEADERS, headers);
         addIfNotNull(message, MonitoringMessagesKeys.MONITORING_MESSAGE_RESULT, result);
         monitoringMessageQueue.add(message);
