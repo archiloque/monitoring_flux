@@ -3,6 +3,7 @@ package com.octo.monitoring_flux.shared;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -32,6 +33,14 @@ public interface MonitoringUtilities {
      */
     public static Date getCurrentTimestamp() {
         return new Date();
+    }
+    
+    public static long getTimeStampFromRfc339(String expression) {
+    	try {
+			return rfc339.parse(expression).getTime();
+		} catch (ParseException pe) {
+			throw new IllegalArgumentException("Expecting yyyy-MM-dd'T'HH:mm:ss.SSSXXX", pe);
+		}
     }
 
     /**

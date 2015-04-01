@@ -12,6 +12,11 @@ import java.util.Map;
 public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 
     /**
+	 * serial
+	 */
+	private static final long serialVersionUID = -876164577874160142L;
+
+	/**
      * Correlation identifier.
      */
 	private String correlationId;
@@ -100,6 +105,7 @@ public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
 	/**
 	 * Marshalling from JSON Object.
 	 */
+	@SuppressWarnings("unchecked")
 	public MonitoringEvent(Map<String, Object> msg) {
 		if (msg == null) return;
 		correlationId 	= (msg.containsKey(MONITORING_MESSAGE_CORRELATION_ID)) ? (String) msg.get(MONITORING_MESSAGE_CORRELATION_ID) : null;
