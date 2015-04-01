@@ -25,6 +25,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.octo.monitoring_flux.cep.processor.ComputeGlobalSlaProcessor;
 import com.octo.monitoring_flux.shared.MonitoringEvent;
 
 /**
@@ -107,11 +108,10 @@ public class EsperComponentTest extends CamelTestSupport {
 		MonitoringEvent frontStartCall = new MonitoringEvent(jacksonReader.readValue(FRONTEND_STARTCALL));
 		MonitoringEvent frontEndCall   = new MonitoringEvent(jacksonReader.readValue(FRONTEND_ENDCALL));
 		
-		MockEndpoint mockSLA = getMockEndpoint("mock:sla");
-		MockEndpoint mockAvg = getMockEndpoint("mock:avg");
+		MockEndpoint mockSLA = getMockEndpoint("mock:unit-sla");
 		
 		template.sendBody("direct:start", frontBegin);
-		for(int i=0; i< 10;i++) {
+		for(int i=0; i< 20;i++) {
 			template.sendBody("direct:start", frontStartCall);
 			Thread.sleep(i * 100);
 			// Correct the elasped time
@@ -122,7 +122,6 @@ public class EsperComponentTest extends CamelTestSupport {
 		
 		// Asserts
 		mockSLA.expectedMinimumMessageCount(9);
-		mockAvg.expectedMinimumMessageCount(8);
         assertMockEndpointsSatisfied();
     }
 
@@ -135,36 +134,57 @@ public class EsperComponentTest extends CamelTestSupport {
             	// Send message to esper
             	from("direct:start").to("esper://monitoring");
             	
-            	// ------------Message Count (hello world cep) --------------
-            	
-            	// Count messages per second
+            	// Throttling
             	from("esper://monitoring?eql="
             			+ "insert into TicksPerSecond "
             			+ "select correlationId, count(*) as cnt "
             			+ "from " + MonitoringEvent.class.getCanonicalName() + ".win:time_batch(1 sec) "
             			+ "group by correlationId").to("esper://monitoring");
-            	
-            	// Display average tick per second for last 10 seconds
             	from("esper://monitoring?eql="
+            			+ "insert into Moyenne10s "
             			+ "select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt "
             			+ "from TicksPerSecond.win:time(10 sec) "
-            			+ "group by correlationId").to("bean:"+DisplayMsgCount.class.getName()).to("mock:avg");
+            			+ "group by correlationId").to("bean:"+DisplayMsgCount.class.getName());
             	
-            	// ------------ Detect SLA Violation ----------------------
-            	
-            	// Record SLA per component
+            	// Global SLA
             	from("esper://monitoring?eql="
-            			+ "insert into SlaCapture "
+            			+ "insert into tmpGlobalSLA "
+            			+ "select correlationId, MIN(timeStamp) as mini, MAX(timeStamp) as maxi "
+            			+ "from " + MonitoringEvent.class.getCanonicalName() + ".win:time_batch(5 sec) "
+            			+ "group by correlationId").to("esper://monitoring");
+            	from("esper://monitoring?eql="
+            			+ "insert into GlobalSLA "
+            			+ "select correlationId, mini, maxi, 0 as elasped "
+            			+ "from tmpGlobalSLA.win:time_batch(4 sec) ").
+            			to("bean:"+ComputeGlobalSlaProcessor.class.getName()).//
+            			to("esper://monitoring");
+            	
+            	// UnitSLA
+            	from("esper://monitoring?eql="
+            			+ "insert into UnitSla "
             			+ "select moduleType, elapsedTime "
             			+ "from " + MonitoringEvent.class.getCanonicalName() 
-            			+ ".win:time_batch(1 sec) where elapsedTime is not null") //
+            			+ ".win:time_batch(1 sec) where elapsedTime is not null")
             			.to("esper://monitoring");
             	
-            	// Detect unitary SLA Violation
+            	// =====================================
+            	
+            	// Throttling Violations
+            	from("esper://monitoring?eql="
+            			+ "select correlationId, avgCnt "
+            			+ "from Moyenne10s.win:time_batch(10 sec) where avgCnt > 3 ").to("mock:throttling");
+            	
+            	// Unitary SLA
             	from("esper://monitoring?eql="
             			+ "select moduleType, elapsedTime "
-            			+ "from SlaCapture.win:time_batch(5 sec) "
-            			+ "where elapsedTime > 0.3").to("bean:"+DisplaySlaViolation.class.getName()).to("mock:sla");
+            			+ "from UnitSla.win:time_batch(5 sec) "
+            			+ "where elapsedTime > 0.3").to("bean:"+DisplaySlaViolation.class.getName()).to("mock:unit-sla");
+            	
+            	// Global SLA
+            	from("esper://monitoring?eql="
+            			+ "select correlationId, elasped "
+            			+ "from GlobalSLA.win:time_batch(5 sec) "
+            			+ "where elasped > 5").to("mock:global-sla");
             }
         };
     }

@@ -1,7 +1,6 @@
 package com.octo.monitoring_flux.cep;
 
 import org.apache.camel.CamelContext;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,7 @@ public class TestStandAloneCamel {
     protected CamelContext camelContext;
 	
 	@Test
-	@Ignore
+	//@Ignore
 	// Parce que sinon le build finit pas hein...
 	public void testRunCamel() throws Exception {
 		camelContext.start();

@@ -44,46 +44,82 @@
 			</multicast>
 		</route>
 		
-		<!-- CEP -->
+		<!-- ***************** CEP RECORDING ******************** -->
 		
-		<!-- compute tick persecond for messages -->
-		<route id="cep.msg.record" trace="false">
+		<!-- Throtling Record -->	
+		<route id="cep.msg.tick" trace="false">
 			<from uri="esper://monitoring?eql=insert into TicksPerSecond
 						select correlationId, count(*) as cnt
 						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec)
 						group by correlationId" />
 			<to uri="esper://monitoring" />
 		</route>
-		
-		<!-- compute average message for last 10s and store to ES -->
-		<route id="cep.msg.store" trace="false">
+		<route id="cep.msg.avg" trace="false">
 			<from uri="esper://monitoring?eql=
+						insert into Moyenne10s
 						select correlationId, avg(cnt) as avgCnt, cnt as MsgCnt
 						from TicksPerSecond.win:time(10 sec)
 						group by correlationId" />
-			<to uri="elasticsearch://duduche?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=msgcount" />
+			<to uri="esper://monitoring" />
 		</route>
-		
-		<!-- record elasped time -->
-		<route id="cep.sla.record" trace="false">
+	
+		<!-- Global SLA Record -->
+		<route id="cep.sla.global-sla-1" trace="false">
 			<from uri="esper://monitoring?eql=
-						insert into SlaCapture
-						select moduleType, elapsedTime 
-						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec) 
-						where elapsedTime is not null" />
+						insert into tmpGlobalSLA
+						select correlationId, MIN(timeStamp) as mini, MAX(timeStamp) as maxi 
+						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(5 sec) 
+						group by correlationId" />
+			<to uri="esper://monitoring" />
+		</route>
+		<route id="cep.sla.global-sla-2" trace="false">
+			<from uri="esper://monitoring?eql=
+						insert into GlobalSLA
+						select correlationId, mini, maxi, 0 as elasped 
+						from tmpGlobalSLA.win:time_batch(4 sec)" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.ComputeGlobalSlaProcessor" />
 			<to uri="esper://monitoring" />
 		</route>
 		
-		<!-- raise alert every 5s for invalid SLA -->
-		<route id="cep.sla.violation" trace="false">
+		<!--  Unit SLA Record -->
+		<route id="cep.sla.unit-sla-1" trace="false">
+			<from uri="esper://monitoring?eql=
+						insert into UnitSla
+						select moduleType, elapsedTime
+						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(5 sec) 
+						where elapsedTime is not null" />
+			<to uri="esper://monitoring" />
+		</route>
+	
+		<!-- ***************** CEP ACTIONS ******************** -->
+		
+		<!-- Single Component breaks SLA -->
+		<route id="cep.sla.violation.unit" trace="false">
 			<from uri="esper://monitoring?eql=
 						select moduleType, elapsedTime
-						from SlaCapture.win:time_batch(5 sec) 
+						from UnitSla.win:time_batch(5 sec) 
 						where elapsedTime > 0.3" />
-			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violation " />
+			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
 		</route>
 		
+		<!-- Business Chain breaks SLA -->
+		<route id="cep.sla.violation.global" trace="false">
+			<from uri="esper://monitoring?eql=
+						select correlationId, elasped 
+						from GlobalSLA.win:time_batch(5 sec)
+						where elasped > 5" />
+			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
+		</route>
 		
+		<!-- Throttling Violation -->
+		<route id="cep.sla.violation.throttling" trace="false">
+			<from uri="esper://monitoring?eql=
+						select correlationId, avgCnt 
+						from Moyenne10s.win:time_batch(10 sec)
+						where avgCnt > 3" />
+			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
+		</route>
+
 	</camelContext>
 	
 </beans>
