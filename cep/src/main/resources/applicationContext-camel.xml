@@ -7,9 +7,12 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
-	
-	<bean id="msg.processor" 
-		  class="com.octo.monitoring_flux.cep.processor.MonitoringMessageProcessor" />
+		  
+	<bean id="string2MonitoringEvent"
+		class="com.octo.monitoring_flux.cep.processor.MarshallProcessor" />
+		
+	<bean id="monitoringEvent2Map"
+		class="com.octo.monitoring_flux.cep.processor.FlattenMapProcessor" />
 	
 	<!-- ****************** -->
 	<!-- *  Camel Context * -->
@@ -17,30 +20,45 @@
 	<camelContext  xmlns="http://camel.apache.org/schema/spring" trace="false">
 		
 		<!-- FrontEnd .to. CEP .to. ElasticSearch -->
-		<route id="audit.frontend" trace="false">
+		<route id="frontend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:${zeromq.frontend.port}?socketType=PULL&amp;linger=0&amp;label=frontend" />
-			<to uri="msg.processor" />
+			<bean ref="string2MonitoringEvent" />
 			<multicast stopOnException="true">
-				<to uri="esper://monitoring" />
-				<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   <pipeline>
+			   		<bean ref="monitoringEvent2Map" />
+					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   </pipeline>
+			   <pipeline>
+			   		<to uri="esper://monitoring" />
+			   	</pipeline>
 			</multicast>
 		</route>
 
 		<route id="middleend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:${zeromq.middleend.port}?socketType=PULL&amp;linger=0&amp;label=middleend" />
-			<to uri="msg.processor" />
+			<bean ref="string2MonitoringEvent" />
 			<multicast stopOnException="true">
-				<to uri="esper://monitoring" />
-				<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   <pipeline>
+			   		<bean ref="monitoringEvent2Map" />
+					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   </pipeline>
+			   <pipeline>
+			   		<to uri="esper://monitoring" />
+			   	</pipeline>
 			</multicast>
 		</route>
 
 		<route id="backend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:${zeromq.backend.port}?socketType=PULL&amp;linger=0&amp;label=backend" />
-			<to uri="msg.processor" />
+			<bean ref="string2MonitoringEvent" />
 			<multicast stopOnException="true">
-				<to uri="esper://monitoring" />
-				<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   <pipeline>
+			   		<bean ref="monitoringEvent2Map" />
+					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   </pipeline>
+			   <pipeline>
+			   		<to uri="esper://monitoring" />
+			   	</pipeline>
 			</multicast>
 		</route>
 		
@@ -48,10 +66,12 @@
 		
 		<!-- Throtling Record -->	
 		<route id="cep.msg.tick" trace="false">
-			<from uri="esper://monitoring?eql=insert into TicksPerSecond
+			<from uri="esper://monitoring?eql=
+						insert into TicksPerSecond
 						select correlationId, count(*) as cnt
 						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec)
 						group by correlationId" />
+			<to uri="stream:out" />
 			<to uri="esper://monitoring" />
 		</route>
 		<route id="cep.msg.avg" trace="false">
@@ -99,6 +119,7 @@
 						select moduleType, elapsedTime
 						from UnitSla.win:time_batch(5 sec) 
 						where elapsedTime > 0.3" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasicSearchProcessor" />
 			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
 		</route>
 		
@@ -108,6 +129,7 @@
 						select correlationId, elasped 
 						from GlobalSLA.win:time_batch(5 sec)
 						where elasped > 5" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasicSearchProcessor" />
 			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
 		</route>
 		
@@ -117,6 +139,7 @@
 						select correlationId, avgCnt 
 						from Moyenne10s.win:time_batch(10 sec)
 						where avgCnt > 3" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasicSearchProcessor" />
 			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
 		</route>
 

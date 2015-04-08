@@ -7,6 +7,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.elasticsearch.ElasticsearchConfiguration;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.elasticsearch.action.get.GetResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -17,6 +18,7 @@ import org.junit.Test;
 public class ElasticSearchSenderTest extends CamelTestSupport {
 
 	@Test
+	@Ignore
 	public void testSend2ElasticSearch() throws Exception {
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("content", "{ \"top\":\"ok\"}");
