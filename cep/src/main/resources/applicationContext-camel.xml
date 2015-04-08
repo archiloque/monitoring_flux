@@ -64,7 +64,7 @@
 		
 		<!-- ***************** CEP RECORDING ******************** -->
 		
-		<!-- Throtling Record -->	
+		<!-- Throttling Record -->
 		<route id="cep.msg.tick" trace="false">
 			<from uri="esper://monitoring?eql=
 						insert into TicksPerSecond
