@@ -26,9 +26,9 @@ public class ComputeGlobalSlaProcessor implements Processor {
 		if (max != null && min != null) {
 			long tickmax = MonitoringUtilities.getTimeStampFromRfc339(max);
 			long tickmin = MonitoringUtilities.getTimeStampFromRfc339(min);
-			long elasped = tickmax - tickmin;
-			events.getProperties().put("elasped", elasped);
-			logger.info("Recording total elapsed=" + elasped);
+			long elapsed = tickmax - tickmin;
+			events.getProperties().put("elapsed", elapsed);
+			logger.info("Recording total elapsed=" + elapsed);
 		}
 		exchange.getOut().setBody(events);
 	}

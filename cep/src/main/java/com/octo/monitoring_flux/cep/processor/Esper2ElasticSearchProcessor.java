@@ -23,7 +23,7 @@ public class Esper2ElasticSearchProcessor implements Processor {
 		String correlationId  = (String) events.getProperties().get("correlationId");
 		String moduleType 	  = (String) events.getProperties().get("moduleType");
 		Double elapsedTime 	  = (Double) events.getProperties().get("elapsedTime");
-		Long elasped		  = (Long) events.getProperties().get("elasped");
+		Long elapsed		  = (Long) events.getProperties().get("elapsed");
 		
 		Map < String, Object> elasticSearchEvent = new HashMap<>();
 		
@@ -46,7 +46,7 @@ public class Esper2ElasticSearchProcessor implements Processor {
 			elasticSearchEvent.put("alert_type", "global-sla");
 			elasticSearchEvent.put("timestamp", System.currentTimeMillis());
 			elasticSearchEvent.put("correlationId", correlationId);
-			elasticSearchEvent.put("count", elasped);
+			elasticSearchEvent.put("count", elapsed);
 		}
 		 
 		exchange.getOut().setBody(elasticSearchEvent);
