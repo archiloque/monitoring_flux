@@ -48,7 +48,6 @@ public class Esper2ElasticSearchProcessor implements Processor {
 			elasticSearchEvent.put("correlationId", correlationId);
 			elasticSearchEvent.put("count", elasped);
 		}
-		
 		 
 		exchange.getOut().setBody(elasticSearchEvent);
 	}

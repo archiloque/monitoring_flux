@@ -26,6 +26,7 @@ import java.util.Map;
  */
 public class JeroMQComponent extends DefaultComponent {
     
+    /** {@inheritDoc} */
     protected Endpoint createEndpoint(String uri, String remaining, Map<String, Object> parameters) throws Exception {
     	// Initialzize Target Endpoint
     	JeroMQEndpoint endpoint = new JeroMQEndpoint(uri, this);

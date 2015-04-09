@@ -22,6 +22,7 @@
         <jeromq.version>0.3.4</jeromq.version>
         <spring.version>4.0.5.RELEASE</spring.version>
         <hawtio.version>1.4.26</hawtio.version>
+        <jest.version>0.1.5</jest.version>
     </properties>
 
     <dependencies>
@@ -54,6 +55,11 @@
             <artifactId>elasticsearch</artifactId>
             <version>${elasticsearch.version}</version>
         </dependency>
+        <dependency>
+  			<groupId>io.searchbox</groupId>
+  			<artifactId>jest</artifactId>
+  			<version>${jest.version}</version>
+		</dependency>
 
         <!-- ZeroMQ -->
         <dependency>
