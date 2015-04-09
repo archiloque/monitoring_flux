@@ -26,7 +26,8 @@
 			<multicast stopOnException="true">
 			   <pipeline>
 			   		<bean ref="monitoringEvent2Map" />
-					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   		<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch" />
+					<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>-->
 			   </pipeline>
 			   <pipeline>
 			   		<to uri="esper://monitoring" />
@@ -40,7 +41,8 @@
 			<multicast stopOnException="true">
 			   <pipeline>
 			   		<bean ref="monitoringEvent2Map" />
-					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   		<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch" />
+					<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>-->
 			   </pipeline>
 			   <pipeline>
 			   		<to uri="esper://monitoring" />
@@ -54,7 +56,8 @@
 			<multicast stopOnException="true">
 			   <pipeline>
 			   		<bean ref="monitoringEvent2Map" />
-					<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/>
+			   		<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch" />
+					<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=cep_to_elasticsearch"/> -->
 			   </pipeline>
 			   <pipeline>
 			   		<to uri="esper://monitoring" />
@@ -120,7 +123,8 @@
 						from UnitSla.win:time_batch(5 sec) 
 						where elapsedTime > 0.3" />
 			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
-			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
+			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=unitsla_violation" />
+			<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" /> -->
 		</route>
 		
 		<!-- Business Chain breaks SLA -->
@@ -130,7 +134,8 @@
 						from GlobalSLA.win:time_batch(5 sec)
 						where elasped > 5" />
 			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
-			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
+			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=globalsla_violation" />
+			<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />-->
 		</route>
 		
 		<!-- Throttling Violation -->
@@ -140,7 +145,8 @@
 						from Moyenne10s.win:time_batch(10 sec)
 						where avgCnt > 3" />
 			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
-			<to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" />
+			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=throttling_violation" />
+			<!-- <to uri="elasticsearch://${elasticsearch.cluster.name}?operation=INDEX&amp;indexName=${elasticsearch.index.name}&amp;indexType=violationSLA" /> -->
 		</route>
 
 	</camelContext>

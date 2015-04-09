@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,7 @@ public class JestComponentTest extends CamelTestSupport {
 			+ "\"HTTP_VERSION\":\"HTTP/1.1\",\"REQUEST_PATH\":\"/messages\"},\"timestamp\":\"2015-02-27T16:45:58.489+01:00\"}";
 	
 	@Test
+	@Ignore
     public void testJestComponent() throws Exception {
 		MockEndpoint mock = getMockEndpoint("mock:end");
 		ObjectReader jacksonReader = new ObjectMapper().reader(Map.class);

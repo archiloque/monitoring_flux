@@ -20,6 +20,7 @@
         <elasticsearch.cluster.name>duduche</elasticsearch.cluster.name>
         <elasticsearch.index.name>monitoring</elasticsearch.index.name>
         <elasticsearch.index>monitoring</elasticsearch.index>
+        <elasticsearch.url>localhost:9200</elasticsearch.url>
 
         <zeromq.frontend.port>2200</zeromq.frontend.port>
         <zeromq.middleend.port>2201</zeromq.middleend.port>
