@@ -119,7 +119,7 @@
 						select moduleType, elapsedTime
 						from UnitSla.win:time_batch(5 sec) 
 						where elapsedTime > 0.3" />
-			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor" />
 			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=unitsla_violation" />
 		</route>
 		
@@ -129,7 +129,7 @@
 						select correlationId, elasped 
 						from GlobalSLA.win:time_batch(5 sec)
 						where elasped > 5" />
-			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor" />
 			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=globalsla_violation" />
 		</route>
 		
@@ -139,7 +139,7 @@
 						select correlationId, avgCnt 
 						from Moyenne10s.win:time_batch(10 sec)
 						where avgCnt > 3" />
-			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor" />
+			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor" />
 			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=throttling_violation" />
 		</route>
 

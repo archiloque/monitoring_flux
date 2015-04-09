@@ -27,7 +27,7 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.octo.monitoring_flux.cep.processor.ComputeGlobalSlaProcessor;
-import com.octo.monitoring_flux.cep.processor.Esper2ElasticSearchProcessor;
+import com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor;
 import com.octo.monitoring_flux.shared.MonitoringEvent;
 
 /**
@@ -179,21 +179,21 @@ public class EsperComponentTest extends CamelTestSupport {
             	from("esper://monitoring?eql="
             			+ "select correlationId, avgCnt "
             			+ "from Moyenne10s.win:time_batch(10 sec) where avgCnt > 3 ").//
-            			to("bean:" + Esper2ElasticSearchProcessor.class.getName()).to("mock:throttling");
+            			to("bean:" + Esper2ElasticsearchProcessor.class.getName()).to("mock:throttling");
             	
             	// Unitary SLA
             	from("esper://monitoring?eql="
             			+ "select moduleType, elapsedTime "
             			+ "from UnitSla.win:time_batch(5 sec) "
             			+ "where elapsedTime > 0.3").//
-            			to("bean:" + Esper2ElasticSearchProcessor.class.getName()).to("mock:unit-sla");
+            			to("bean:" + Esper2ElasticsearchProcessor.class.getName()).to("mock:unit-sla");
             	
             	// Global SLA
             	from("esper://monitoring?eql="
             			+ "select correlationId, elasped "
             			+ "from GlobalSLA.win:time_batch(5 sec) "
             			+ "where elasped > 5").//
-            			to("bean:" + Esper2ElasticSearchProcessor.class.getName()).to("mock:global-sla");
+            			to("bean:" + Esper2ElasticsearchProcessor.class.getName()).to("mock:global-sla");
             }
         };
     }

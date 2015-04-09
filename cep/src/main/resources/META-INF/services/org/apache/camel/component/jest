@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-class=com.octo.monitoring_flux.cep.jest.JestElasticSearchComponent
+class=com.octo.monitoring_flux.cep.jest.JestElasticsearchComponent

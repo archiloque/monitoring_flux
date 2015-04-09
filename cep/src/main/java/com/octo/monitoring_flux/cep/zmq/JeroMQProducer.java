@@ -17,7 +17,7 @@ public class JeroMQProducer extends DefaultProducer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * urrent JeroMQ Component.
+     * Current JeroMQ Component.
      */
     private JeroMQEndpoint endpoint;
 
@@ -49,7 +49,7 @@ public class JeroMQProducer extends DefaultProducer {
 
         // URL
         endpoint.getzContextSocket().bind(endpoint.getUrl());
-        logger.info("ZeroMQ binding ETABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
+        logger.info("ZeroMQ binding ESTABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
     }
 
     public void process(Exchange exchange) throws Exception {
