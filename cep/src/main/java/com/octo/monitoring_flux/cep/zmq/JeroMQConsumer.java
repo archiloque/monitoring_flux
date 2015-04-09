@@ -2,7 +2,7 @@ package com.octo.monitoring_flux.cep.zmq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringEvent;
+import com.octo.monitoring_flux.cep.MonitoringEvent;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.Processor;
@@ -60,7 +60,7 @@ public class JeroMQConsumer extends ScheduledPollConsumer {
         endpoint.getzContextSocket().connect(endpoint.getUrl());
         // if no label defined, set default
         if (endpoint.getLabel() == null) endpoint.setLabel(endpoint.getUrl());
-        logger.info("ZeroMQ connection ETABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
+        logger.info("ZeroMQ connection ESTABLISHED over <" + endpoint.getUrl() + "> labelled as '" + endpoint.getLabel() + "'");
     }
 
     @Override

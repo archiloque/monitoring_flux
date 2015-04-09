@@ -2,7 +2,7 @@ package com.octo.monitoring_flux.cep.processor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.octo.monitoring_flux.shared.MonitoringEvent;
+import com.octo.monitoring_flux.cep.MonitoringEvent;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 

@@ -3,7 +3,7 @@ package com.octo.monitoring_flux.cep.processor;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 
-import com.octo.monitoring_flux.shared.MonitoringEvent;
+import com.octo.monitoring_flux.cep.MonitoringEvent;
 
 /**
  * Convert from {@link MonitoringEvent} to ElasticSearch MAP.

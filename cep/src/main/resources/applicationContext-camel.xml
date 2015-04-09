@@ -19,7 +19,6 @@
 	<!-- ****************** -->
 	<camelContext  xmlns="http://camel.apache.org/schema/spring" trace="false">
 		
-		<!-- FrontEnd .to. CEP .to. ElasticSearch -->
 		<route id="frontend" trace="false">
 			<from uri="jeromq://tcp://127.0.0.1:${zeromq.frontend.port}?socketType=PULL&amp;linger=0&amp;label=frontend" />
 			<bean ref="string2MonitoringEvent" />
@@ -69,7 +68,7 @@
 			<from uri="esper://monitoring?eql=
 						insert into TicksPerSecond
 						select correlationId, count(*) as cnt
-						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(1 sec)
+						from com.octo.monitoring_flux.cep.MonitoringEvent.win:time_batch(1 sec)
 						group by correlationId" />
 			<to uri="stream:out" />
 			<to uri="esper://monitoring" />
@@ -88,7 +87,7 @@
 			<from uri="esper://monitoring?eql=
 						insert into tmpGlobalSLA
 						select correlationId, MIN(timeStamp) as mini, MAX(timeStamp) as maxi 
-						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(5 sec) 
+						from com.octo.monitoring_flux.cep.MonitoringEvent.win:time_batch(5 sec)
 						group by correlationId" />
 			<to uri="esper://monitoring" />
 		</route>
@@ -106,7 +105,7 @@
 			<from uri="esper://monitoring?eql=
 						insert into UnitSla
 						select moduleType, elapsedTime
-						from com.octo.monitoring_flux.shared.MonitoringEvent.win:time_batch(5 sec) 
+						from com.octo.monitoring_flux.cep.MonitoringEvent.win:time_batch(5 sec)
 						where elapsedTime is not null" />
 			<to uri="esper://monitoring" />
 		</route>
@@ -120,7 +119,7 @@
 						from UnitSla.win:time_batch(5 sec) 
 						where elapsedTime > 0.3" />
 			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor" />
-			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=unitsla_violation" />
+			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=unit_sla_violation" />
 		</route>
 		
 		<!-- Business Chain breaks SLA -->
@@ -130,7 +129,7 @@
 						from GlobalSLA.win:time_batch(5 sec)
 						where elasped > 5" />
 			<to uri="bean://com.octo.monitoring_flux.cep.processor.Esper2ElasticsearchProcessor" />
-			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=globalsla_violation" />
+			<to uri="jest://${elasticsearch.url}?indexName=${elasticsearch.index.name}&amp;indexType=global_sla_violation" />
 		</route>
 		
 		<!-- Throttling Violation -->

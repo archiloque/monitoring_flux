@@ -1,66 +1,213 @@
 [
   {
-    "_index":".kibana",
-    "_type":"visualization",
-    "_id":"Frontend",
-    "_score":0,
-    "_source":{
-      "title":"Frontend",
-      "visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
-      "description":"",
-      "savedSearchId":"Frontend",
-      "version":1,
-      "kibanaSavedObjectMeta":{
-        "searchSourceJSON":"{\"filter\":[]}"
-      }
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "MiddleEnd",
+    "_score": 0,
+    "_source": {
+      "title": "MiddleEnd",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "message_type",
+        "module_type",
+        "module_id"
+      ],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[{\"meta\":{\"disabled\":false,\"index\":\"monitoring\",\"key\":\"module_type\",\"negate\":false,\"value\":\"monitoring-flux-middleend\"},\"query\":{\"match\":{\"module_type\":{\"query\":\"monitoring-flux-middleend\",\"type\":\"phrase\"}}}},{\"meta\":{\"index\":\"monitoring\",\"negate\":false,\"key\":\"message_type\",\"value\":\"End call\",\"disabled\":false},\"query\":{\"match\":{\"message_type\":{\"query\":\"End call\",\"type\":\"phrase\"}}}}]}"}
     }
   },
   {
-    "_index":".kibana",
-    "_type":"visualization",
-    "_id":"Middleend",
-    "_score":0,
-    "_source":{
-      "title":"Middleend",
-      "visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
-      "description":"",
-      "savedSearchId":"Middleend",
-      "version":1,
-      "kibanaSavedObjectMeta":{
-        "searchSourceJSON":"{\"filter\":[]}"
-      }
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "Frontend",
+    "_score": 0,
+    "_source": {
+      "title": "Frontend",
+      "description": "",
+      "hits": 0,
+      "columns": [
+        "message_type",
+        "module_type",
+        "module_id"
+      ],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[{\"meta\":{\"disabled\":false,\"index\":\"monitoring\",\"key\":\"module_type\",\"negate\":false,\"value\":\"MonitoringBase\"},\"query\":{\"match\":{\"module_type\":{\"query\":\"MonitoringBase\",\"type\":\"phrase\"}}}},{\"meta\":{\"index\":\"monitoring\",\"negate\":false,\"key\":\"message_type\",\"value\":\"End call\",\"disabled\":false},\"query\":{\"match\":{\"message_type\":{\"query\":\"End call\",\"type\":\"phrase\"}}}}]}"}
     }
   },
   {
-    "_index":".kibana",
-    "_type":"visualization",
-    "_id":"Backend",
-    "_score":0,
-    "_source":{
-      "title":"Backend",
-      "visState":"{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
-      "description":"",
-      "savedSearchId":"Backend",
-      "version":1,
-      "kibanaSavedObjectMeta":{
-        "searchSourceJSON":"{\"filter\":[]}"
-      }
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "Backend",
+    "_score": 0,
+    "_source": {
+      "title": "Backend",
+      "description": "",
+      "hits": 0,
+      "columns": ["_source"],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[{\"meta\":{\"disabled\":false,\"index\":\"monitoring\",\"key\":\"module_type\",\"negate\":false,\"value\":\"monitoring-flux-backend\"},\"query\":{\"match\":{\"module_type\":{\"query\":\"monitoring-flux-backend\",\"type\":\"phrase\"}}}},{\"meta\":{\"index\":\"monitoring\",\"negate\":false,\"key\":\"message_type\",\"value\":\"End processing\",\"disabled\":false},\"query\":{\"match\":{\"message_type\":{\"query\":\"End processing\",\"type\":\"phrase\"}}}}]}"}
     }
   },
   {
-    "_index":".kibana",
-    "_type":"dashboard",
-    "_id":"Monitoring",
-    "_score":0,
-    "_source":{
-      "title":"Monitoring",
-      "hits":0,
-      "description":"",
-      "panelsJSON":"[{\"col\":1,\"id\":\"Frontend\",\"row\":1,\"size_x\":12,\"size_y\":3,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Middleend\",\"row\":4,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Backend\",\"row\":6,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"}]",
-      "version":1,
-      "kibanaSavedObjectMeta":{
-        "searchSourceJSON":"{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"
-      }
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "throttling_violation",
+    "_score": 0,
+    "_source": {
+      "title": "throttling_violation",
+      "description": "",
+      "hits": 0,
+      "columns": ["_source"],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[{\"meta\":{\"index\":\"monitoring\",\"negate\":false,\"key\":\"_type\",\"value\":\"throttling_violation\",\"disabled\":false},\"query\":{\"match\":{\"_type\":{\"query\":\"throttling_violation\",\"type\":\"phrase\"}}}}]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "visualization",
+    "_id": "MiddleEnd",
+    "_score": 0,
+    "_source": {
+      "title": "MiddleEnd",
+      "visState": "{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "description": "",
+      "savedSearchId": "MiddleEnd",
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"filter\":[]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "unit_sla_violation",
+    "_score": 0,
+    "_source": {
+      "title": "unit_sla_violation",
+      "description": "",
+      "hits": 0,
+      "columns": ["_source"],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[{\"meta\":{\"index\":\"monitoring\",\"negate\":false,\"key\":\"_type\",\"value\":\"unit_sla_violation\",\"disabled\":false},\"query\":{\"match\":{\"_type\":{\"query\":\"unit_sla_violation\",\"type\":\"phrase\"}}}}]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "visualization",
+    "_id": "Frontend",
+    "_score": 0,
+    "_source": {
+      "title": "Frontend",
+      "visState": "{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "description": "",
+      "savedSearchId": "Frontend",
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"filter\":[]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "visualization",
+    "_id": "Backend",
+    "_score": 0,
+    "_source": {
+      "title": "Backend",
+      "visState": "{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"elapsed_time\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "description": "",
+      "savedSearchId": "Backend",
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"filter\":[]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "config",
+    "_id": "4.0.1",
+    "_score": 0,
+    "_source": {
+      "buildNum": 5930,
+      "defaultIndex": "monitoring",
+      "discover:sampleSize": "50000",
+      "fields:popularLimit": "20",
+      "history:limit": "100"
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "index-pattern",
+    "_id": "monitoring",
+    "_score": 0,
+    "_source": {
+      "title": "monitoring",
+      "timeFieldName": "timestamp",
+      "customFormats": "{}",
+      "fields": "[{\"type\":\"string\",\"indexed\":false,\"analyzed\":false,\"name\":\"_index\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"name\":\"_type\",\"count\":6,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"count\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"alert_type\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"correlation_id\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":false,\"analyzed\":false,\"name\":\"_source\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":false,\"analyzed\":false,\"name\":\"_id\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"module\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"time\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.HTTP_VERSION\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.X-Correlation-id\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.HTTP_ACCEPT\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.REQUEST_METHOD\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.SERVER_NAME\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.content-length\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.HTTP_HOST\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.user-agent\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.HTTP_USER_AGENT\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"headers.X-Starting-Timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.SERVER_PROTOCOL\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":true,\"name\":\"message_type\",\"count\":3,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.content-type\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.PATH_INFO\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"begin_processing_timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"module_id\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.content_type\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"result.Status\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.REMOTE_ADDR\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"service_params.timeToSpend\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"payload.content_type\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.CONTENT_TYPE\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":true,\"name\":\"endpoint\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"end_timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.correlation_id\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"headers.x-starting-timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"payload.timeToSpend\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"elapsed_time\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.host\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.REQUEST_URI\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"result.content\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"result.code\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.CONTENT_LENGTH\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.accept-encoding\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.accept\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"begin_timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":false,\"doc_values\":true,\"name\":\"module_type\",\"count\":7,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"service_params.numberOfMessages\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"payload.numberOfMessages\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.SERVER_SOFTWARE\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"service_url\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.REMOTE_HOST\",\"count\":0,\"scripted\":false},{\"type\":\"date\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"headers.timestamp\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.SERVER_PORT\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"headers.x-correlation-id\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.GATEWAY_INTERFACE\",\"count\":0,\"scripted\":false},{\"type\":\"string\",\"indexed\":true,\"analyzed\":true,\"doc_values\":false,\"name\":\"env.REQUEST_PATH\",\"count\":0,\"scripted\":false},{\"type\":\"number\",\"indexed\":true,\"analyzed\":false,\"doc_values\":false,\"name\":\"avg_cnt\",\"count\":0,\"scripted\":false}]"
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "search",
+    "_id": "global_sla_violation",
+    "_score": 0,
+    "_source": {
+      "title": "global_sla_violation",
+      "description": "",
+      "hits": 0,
+      "columns": ["_source"],
+      "sort": [
+        "module_type",
+        "asc"
+      ],
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"index\":\"monitoring\",\"query\":{\"query_string\":{\"query\":\"_type: \\\"global_sla_violation\\\"\",\"analyze_wildcard\":true}},\"highlight\":{\"pre_tags\":[\"@kibana-highlighted-field@\"],\"post_tags\":[\"@/kibana-highlighted-field@\"],\"fields\":{\"*\":{}}},\"filter\":[]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "visualization",
+    "_id": "throtling_violation",
+    "_score": 0,
+    "_source": {
+      "title": "throtling_violation",
+      "visState": "{\"type\":\"area\",\"params\":{\"shareYAxis\":true,\"addTooltip\":true,\"addLegend\":true,\"mode\":\"stacked\",\"defaultYExtents\":false},\"aggs\":[{\"id\":\"1\",\"type\":\"percentiles\",\"schema\":\"metric\",\"params\":{\"field\":\"avg_cnt\",\"percents\":[1,5,25,50,75,95,99]}},{\"id\":\"2\",\"type\":\"date_histogram\",\"schema\":\"segment\",\"params\":{\"field\":\"timestamp\",\"interval\":\"auto\",\"min_doc_count\":1,\"extended_bounds\":{}}}],\"listeners\":{}}",
+      "description": "",
+      "savedSearchId": "throttling_violation",
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"filter\":[]}"}
+    }
+  },
+  {
+    "_index": ".kibana",
+    "_type": "dashboard",
+    "_id": "Monitoring",
+    "_score": 0,
+    "_source": {
+      "title": "Monitoring",
+      "hits": 0,
+      "description": "",
+      "panelsJSON": "[{\"col\":1,\"id\":\"Frontend\",\"row\":1,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"MiddleEnd\",\"row\":3,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"},{\"col\":1,\"id\":\"Backend\",\"row\":5,\"size_x\":12,\"size_y\":2,\"type\":\"visualization\"}]",
+      "version": 1,
+      "kibanaSavedObjectMeta": {"searchSourceJSON": "{\"filter\":[{\"query\":{\"query_string\":{\"analyze_wildcard\":true,\"query\":\"*\"}}}]}"}
     }
   }
 ]

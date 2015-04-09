@@ -1,6 +1,7 @@
-package com.octo.monitoring_flux.shared;
+package com.octo.monitoring_flux.cep;
 
-import java.io.Serializable;
+import com.octo.monitoring_flux.shared.MonitoringMessagesKeys;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,12 +10,7 @@ import java.util.Map;
  * POJO representing a monitoring message.
  *
  */
-public class MonitoringEvent implements Serializable, MonitoringMessagesKeys {
-
-    /**
-	 * serial
-	 */
-	private static final long serialVersionUID = -876164577874160142L;
+public class MonitoringEvent implements MonitoringMessagesKeys {
 
 	/**
      * Correlation identifier.

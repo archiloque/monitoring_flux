@@ -11,26 +11,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath*:/META-INF/camel-context.xml"} )
+@ContextConfiguration(locations = {"classpath*:/META-INF/camel-context.xml"})
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class TestStandAloneCamel {
- 
-	@Autowired
+
+    @Autowired
     protected CamelContext camelContext;
-	
-	@Test
-	@Ignore
-	// Parce que sinon le build finit pas hein...
-	public void testRunCamel() throws Exception {
-		camelContext.start();
-		while(true) {
-			Thread.sleep(2000);
-		}
-		
-	}
-	
-	
-	
-	
+
+    @Test
+    @Ignore
+    // Parce que sinon le build finit pas hein...
+    public void testRunCamel() throws Exception {
+        camelContext.start();
+        while (true) {
+            Thread.sleep(2000);
+        }
+
+    }
+
 
 }

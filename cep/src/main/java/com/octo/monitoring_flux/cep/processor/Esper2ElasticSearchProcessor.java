@@ -32,8 +32,8 @@ public class Esper2ElasticsearchProcessor implements Processor {
             logger.info("Alert Throttling");
             elasticSearchEvent.put("alert_type", "throttling");
             elasticSearchEvent.put("timestamp", MonitoringUtilities.getCurrentTimestampAsRfc339());
-            elasticSearchEvent.put("avgCnt", avgCnt);
-            elasticSearchEvent.put("correlationId", correlationId);
+            elasticSearchEvent.put("avg_cnt", avgCnt);
+            elasticSearchEvent.put("correlation_id", correlationId);
 
         } else if (moduleType != null) {
             logger.info("Trigger Unitary SLA Violation for component");
@@ -46,7 +46,7 @@ public class Esper2ElasticsearchProcessor implements Processor {
             logger.info("Global SLA Violation for component");
             elasticSearchEvent.put("alert_type", "global-sla");
             elasticSearchEvent.put("timestamp", MonitoringUtilities.getCurrentTimestampAsRfc339());
-            elasticSearchEvent.put("correlationId", correlationId);
+            elasticSearchEvent.put("correlation_id", correlationId);
             elasticSearchEvent.put("count", elapsed);
         }
 

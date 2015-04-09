@@ -5,9 +5,9 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,43 +23,42 @@ import org.junit.Test;
 
 /**
  * This class test connectivity to ZeroMQ.
- *
- * @author clunven
  */
 public class JeroMQComponentTest extends CamelTestSupport {
-	
-	/** target URL . */
-	private static final String URL_TEST = "tcp://127.0.0.1:2206";
-	
-	/**
-	 * Sample communication test.
-	 *
-	 * @throws Exception
-	 */
-	@Test
+
+    /**
+     * target URL .
+     */
+    private static final String URL_TEST = "tcp://127.0.0.1:2206";
+
+    /**
+     * Sample communication test.
+     *
+     * @throws Exception
+     */
+    @Test
     public void testJeroMQComponent() throws Exception {
 
-		MockEndpoint mock = getMockEndpoint("mock:end");
-		
-		// Envoi du message
-		template.sendBody("direct:start","{ \"id\":\"1\"}");
-		
+        MockEndpoint mock = getMockEndpoint("mock:end");
+
+        // Envoi du message
+        template.sendBody("direct:start", "{ \"id\":\"1\"}");
+
         // Asserts
-		mock.expectedMinimumMessageCount(1);
+        mock.expectedMinimumMessageCount(1);
         assertMockEndpointsSatisfied();
     }
 
-    /** {@inheritDoc} */
     @Override
     protected RouteBuilder createRouteBuilder() throws Exception {
-    	return new RouteBuilder() {
+        return new RouteBuilder() {
             public void configure() {
-            	
+
                 // Send message to 0MQ
-            	from("direct:start").to("jeromq://" +URL_TEST + "?socketType=PUSH&linger=0").end();
-                
-            	// Read message from 0MQ and send to mock
-                from("jeromq://" +URL_TEST + "?socketType=PULL&linger=0").to("mock:end");
+                from("direct:start").to("jeromq://" + URL_TEST + "?socketType=PUSH&linger=0").end();
+
+                // Read message from 0MQ and send to mock
+                from("jeromq://" + URL_TEST + "?socketType=PULL&linger=0").to("mock:end");
             }
         };
     }

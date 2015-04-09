@@ -28,16 +28,6 @@ public class MonitoringMessenger {
         this.moduleType = moduleType;
         this.moduleId = moduleId;
     }
-    
-    /**
-     * Send dedicated message.
-     *
-     * @param mm
-     * 		target message to be sent
-     */
-    public void sendMonitoringMessage(MonitoringEvent mm) {
-        monitoringMessageQueue.add(mm.asMessage());
-    }
 
     /**
      * Send a message to the monitoring system.
