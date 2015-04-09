@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.espertech.esper.event.map.MapEventBean;
+import com.octo.monitoring_flux.shared.MonitoringUtilities;
 
 public class Esper2ElasticSearchProcessor implements Processor {
 	
@@ -30,21 +31,21 @@ public class Esper2ElasticSearchProcessor implements Processor {
 		if (avgCnt != null) {
 			logger.info("Alert Throttling");
 			elasticSearchEvent.put("alert_type", "throttling");
-			elasticSearchEvent.put("timestamp", System.currentTimeMillis());
+			elasticSearchEvent.put("timestamp", MonitoringUtilities.getCurrentTimestampAsRfc339());
 			elasticSearchEvent.put("avgCnt", avgCnt);
 			elasticSearchEvent.put("correlationId", correlationId);
 			
 		} else if (moduleType != null) {
 			logger.info("Trigger Unitary SLA Violation for component");
 			elasticSearchEvent.put("alert_type", "unitary-sla");
+			elasticSearchEvent.put("timestamp", MonitoringUtilities.getCurrentTimestampAsRfc339());
 			elasticSearchEvent.put("module", moduleType);
 			elasticSearchEvent.put("time", elapsedTime);
-			elasticSearchEvent.put("timestamp", System.currentTimeMillis());
 			
-		} else if (elasped != null) {
+		} else if (elapsed != null) {
 			logger.info("Global SLA Violation for component");
 			elasticSearchEvent.put("alert_type", "global-sla");
-			elasticSearchEvent.put("timestamp", System.currentTimeMillis());
+			elasticSearchEvent.put("timestamp", MonitoringUtilities.getCurrentTimestampAsRfc339());
 			elasticSearchEvent.put("correlationId", correlationId);
 			elasticSearchEvent.put("count", elapsed);
 		}
