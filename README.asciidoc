@@ -96,6 +96,10 @@ curl -XPOST 'http://localhost:9200/monitoring' -d '{
             },
             "result":{
                "type":"object"
+            },
+            "alert_type": {
+               "type":"string",
+               "index":"not_analyzed"
             }
          }
       }
