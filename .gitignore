@@ -8,3 +8,4 @@ shared/target
 .DS_Store
 *.iml
 cep/data
+ansible/.vagrant/

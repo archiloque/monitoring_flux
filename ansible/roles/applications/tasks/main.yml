@@ -1,0 +1,35 @@
+
+- name: clone repo
+  git: repo=https://github.com/archiloque/monitoring_flux.git dest=/home/vagrant/monitoring_flux
+
+
+- include: frontend.yml
+
+
+- name: install maven project
+  shell: mvn install
+  args:
+    chdir: /home/vagrant/monitoring_flux
+
+- name: copy script to create index
+  copy: src=index.sh dest=/home/vagrant/index.sh mode=0744
+
+- name: create monitoring index in elasticsearch
+  shell: /home/vagrant/index.sh
+
+
+- name: copy supervisord conf file
+  copy: src={{ item }}.conf dest=/etc/supervisor/conf.d/{{ item }}.conf
+  sudo: true
+  with_items:
+    - middle_end
+    - backend
+    - cep
+
+- name: reload supervisor config
+  shell: supervisorctl reread
+  sudo: true
+
+- name: start apps
+  shell: supervisorctl update
+  sudo: true

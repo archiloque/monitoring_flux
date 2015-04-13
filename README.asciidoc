@@ -15,6 +15,9 @@ To run all the elements you will need:
 
 == Installation
 
+You can use vagrant and ansible scripts to create a vm with all application configured :
+  - link:ansible[monitoring ansible]
+
 After all the required elements are installed:
 
 - Create the index in ElasticSearch (xref:elasticsearch-index[see below])

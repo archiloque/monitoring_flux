@@ -1,0 +1,12 @@
+- name: 'Add ppa for zeromq'
+  apt_repository: repo='ppa:chris-lea/zeromq'
+
+- name: 'update apt cache'
+  apt: update_cache=yes
+
+- name: 'install zeromq'
+  apt: name={{ item }} state=present
+  with_items:
+    - libzmq3-dbg
+    - libzmq3-dev
+    - libzmq3

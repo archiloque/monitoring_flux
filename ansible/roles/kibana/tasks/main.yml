@@ -1,0 +1,24 @@
+- name: Add kibana user
+  user: name=kibana shell=/bin/bash
+
+- name: Download kibana
+  get_url: url=https://download.elasticsearch.org/kibana/kibana/kibana-{{ KIBANA_VERSION }}.tar.gz dest=/opt/kibana-{{KIBANA_VERSION}}.tar.gz
+
+
+- unarchive: copy=no src="/opt/kibana-{{KIBANA_VERSION}}.tar.gz" dest="/opt/"
+
+- name: create /var/www directory
+  file: path=/var/www state=directory
+
+- name: Move kibana to /var/www
+  command: cp -rf /opt/kibana-{{KIBANA_VERSION}} /var/www/kibana4
+
+
+- name: Change rights of kibana4
+  file: path=/var/www/kibana4 owner=kibana group=kibana
+
+- name: Add supervisord configuration
+  copy: src=kibana.conf dest=/etc/supervisor/conf.d/kibana.conf
+
+
+

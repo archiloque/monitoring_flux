@@ -1,0 +1,17 @@
+- name: 'update apt cache'
+  apt: update_cache=yes
+  sudo: true
+
+- name: Install packages
+  apt: name={{ item }} state=present
+  sudo: true
+  with_items:
+    - git
+    - curl
+    - build-essential
+    - autoconf
+    - bison
+    - ruby-dev
+    - supervisor
+
+

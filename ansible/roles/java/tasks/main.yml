@@ -1,0 +1,15 @@
+- name: 'add ppa repository for java 8'
+  apt_repository: repo='ppa:webupd8team/java'
+
+- name: Automatically select the Oracle License
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+
+- name: 'install java 8'
+  apt: name=oracle-java8-installer state=present
+
+- name: 'install java 8 env vars'
+  apt: name=oracle-java8-set-default state=present
+
+- name: 'install maven'
+  apt: name=maven state=present
+

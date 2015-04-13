@@ -1,0 +1,12 @@
+- name: Install bundler
+  shell: '/etc/profile.d/rbenv.sh && gem install bundler'
+  sudo: true
+
+- name: bundle install
+  shell: '/etc/profile.d/rbenv.sh && bundle install'
+  args:
+    chdir: /home/vagrant/monitoring_flux/frontend
+
+- name: copy supervisord conf file
+  copy: src=frontend.conf dest=/etc/supervisor/conf.d/frontend.conf
+

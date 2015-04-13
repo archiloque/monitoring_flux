@@ -1,0 +1,15 @@
+- hosts: monitoring
+  remote_user: vagrant
+  gather_facts: false
+  sudo: true
+  roles:
+    - { role: java, tags: ['java'] }
+    - { role: rbenv, tags: ['rbenv'] }
+    - { role: redis, tags: ['redis'] }
+    - { role: zeromq, tags: ['zeromq'] }
+    - { role: elasticsearch, tags: ['elasticsearch'] }
+    - { role: kibana, tags: ['kibana'] }
+    - { role: applications, tags: ['applications'] }
+
+
+

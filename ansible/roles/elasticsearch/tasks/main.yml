@@ -1,0 +1,33 @@
+
+- name: Add ES user
+  user: name={{ES_USER}} shell=/bin/bash home=/home/{{ES_USER}}
+
+- name: Download elasticsearch
+  sudo_user: "{{ES_USER}}"
+  get_url: url=https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-{{ES_VERSION}}.tar.gz dest={{ES_HOME}}/elasticsearch-{{ES_VERSION}}.tar.gz
+
+- name: Unarchive ES
+  sudo_user: "{{ES_USER}}"
+  unarchive: copy=no src="{{ES_HOME}}/elasticsearch-{{ES_VERSION}}.tar.gz" dest="{{ES_HOME}}/"
+
+- file: src="{{ES_HOME}}/elasticsearch-{{ES_VERSION}}" dest="{{ES_HOME}}/elasticsearch" owner=elasticsearch group=elasticsearch state=link
+
+- name: Add installation folders for elasticsearch
+  file: path={{ES_HOME}}/{{item}} state=directory group=elasticsearch owner=elasticsearch
+  with_items:
+    - plugins
+    - conf
+
+- template: src=elasticsearch.yml.j2 dest="{{ES_HOME}}/conf/elasticsearch.yml" owner=elasticsearch group=elasticsearch
+  notify: restart elasticsearch
+
+- name: Add init.d script
+  template: src=initd.sh.j2 dest=/etc/init.d/{{ES_USER}} mode=0755
+  notify: restart elasticsearch
+
+
+
+- name: Enable autorestart elasticsearch
+  service: name=elasticsearch enabled=true
+
+- service: name=elasticsearch state=started

@@ -1,0 +1,6 @@
+ES_VERSION: 1.4.4
+ES_USER: elasticsearch
+ES_HOME: /home/elasticsearch
+ES_CLUSTER_NAME: my-cluster
+ES_HTTP_PORT: 9200
+ES_TCP_PORT: 9300
