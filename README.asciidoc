@@ -1,5 +1,7 @@
 An example of a complete monitoring system.
 
+Detailed description of all components can be found link:http://blog.octo.com/le-monitoring-de-flux-par-lexemple/[here] in French.
+
 == Vagrant installation
 
 You can use link:ansible[vagrant and ansible] scripts to create a virtual machine with all application configured.
