@@ -1,6 +1,12 @@
 An example of a complete monitoring system.
 
-== Requirements
+== Vagrant installation
+
+You can use link:ansible[vagrant and ansible] scripts to create a virtual machine with all application configured.
+
+== Manual installation
+
+=== Requirements
 
 To run all the elements you will need:
 
@@ -13,10 +19,7 @@ To run all the elements you will need:
 - link:https://www.elastic.co[Elasticsearch]
 - link:https://www.elastic.co/products/kibana[Kibana]
 
-== Installation
-
-You can use vagrant and ansible scripts to create a vm with all application configured :
-  - link:ansible[monitoring ansible]
+=== Installation
 
 After all the required elements are installed:
 
@@ -25,7 +28,7 @@ After all the required elements are installed:
 - Run `bundle install` in the frontend directory to install all the frontend's dependencies
 - Optionally import the `kibana-dashboards.json` data in the `.kibana` index in Elasticsearch to get a sample dashboard
 
-== Starting the applications
+=== Starting the applications
 
 First start the external components:
 
