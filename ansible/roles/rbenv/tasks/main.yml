@@ -29,7 +29,7 @@
     dest={{ rbenv_root }}/plugins/{{ item.name }}
     version={{ item.version }}
     accept_hostkey=true
-  with_items: rbenv_plugins
+  with_items: "{{ rbenv_plugins }}"
   sudo: true
 
 - name: add rbenv initialization to profile
